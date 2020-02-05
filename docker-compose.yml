@@ -1,0 +1,30 @@
+version: "3.3"
+
+services:
+  web:
+    image: webdevops/php-nginx:7.3
+    working_dir: /app
+    ports:
+      - 80:80
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: "pgsql://postgres:socialmanager@db:5432/social_manager_db"
+      WEB_DOCUMENT_ROOT: /app/public
+      WEB_DOCUMENT_INDEX: index.php
+      PHP_DATE_TIMEZONE: "Europe/Paris"
+      PHP_DISPLAY_ERRORS: 1
+
+  db:
+    container_name: db
+    image: postgres:10-alpine
+    ports:
+      - "15432:5432"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 18080:8080
