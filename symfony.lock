@@ -1,4 +1,16 @@
 {
+    "behat/behat": {
+        "version": "v3.6.1"
+    },
+    "behat/gherkin": {
+        "version": "v4.6.0"
+    },
+    "behat/transliterator": {
+        "version": "v1.3.0"
+    },
+    "container-interop/container-interop": {
+        "version": "1.2.0"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -92,6 +104,18 @@
     },
     "fig/link-util": {
         "version": "1.1.0"
+    },
+    "friendsofsymfony/rest-bundle": {
+        "version": "2.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "2.2",
+            "ref": "cad41ef93d6150067ae2bb3c7fd729492dff6f0a"
+        },
+        "files": [
+            "config/packages/fos_rest.yaml"
+        ]
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
@@ -510,6 +534,12 @@
     },
     "webmozart/assert": {
         "version": "1.6.0"
+    },
+    "willdurand/jsonp-callback-validator": {
+        "version": "v1.1.0"
+    },
+    "willdurand/negotiation": {
+        "version": "v2.3.1"
     },
     "zendframework/zend-code": {
         "version": "3.4.1"
