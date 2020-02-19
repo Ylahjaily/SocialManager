@@ -23,6 +23,6 @@ class UserController extends AbstractFOSRestController
      */
     public function getApiUsers()
     {
-
+        return $this->view("testAuth");
     }  
 }
