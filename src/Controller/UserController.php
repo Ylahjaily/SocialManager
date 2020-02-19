@@ -15,7 +15,7 @@ class UserController extends AbstractFOSRestController
      */
     public function getApiUser(User $user)
     {
-        //TODO
+
     }
 
     /**
@@ -23,6 +23,6 @@ class UserController extends AbstractFOSRestController
      */
     public function getApiUsers()
     {
-        //TODO
+
     }  
 }

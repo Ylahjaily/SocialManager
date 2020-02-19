@@ -36,7 +36,7 @@ class Review
     private $is_approved;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $decision_at;
 
@@ -45,8 +45,14 @@ class Review
      */
     private $reviewComments;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $created_at;
+
     public function __construct()
     {
+        $this->created_at = new \DateTime('now');
         $this->reviewComments = new ArrayCollection();
     }
 
@@ -130,6 +136,18 @@ class Review
                 $reviewComment->setReviewId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $created_at): self
+    {
+        $this->created_at = $created_at;
 
         return $this;
     }
