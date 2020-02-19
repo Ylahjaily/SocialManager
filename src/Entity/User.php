@@ -6,8 +6,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\Table(name="`user`")
  */
 class User
 {
@@ -73,8 +75,16 @@ class User
      */
     private $socialNetworks;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $password;
+
     public function __construct()
     {
+        $this->roles = array('ROLE_USER');
+        $this->created_at = new \DateTime('now');
+        
         $this->proposals = new ArrayCollection();
         $this->reviews = new ArrayCollection();
         $this->comments = new ArrayCollection();
@@ -307,6 +317,18 @@ class User
             $this->socialNetworks->removeElement($socialNetwork);
             $socialNetwork->removeUserId($this);
         }
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
 
         return $this;
     }

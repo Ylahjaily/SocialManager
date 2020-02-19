@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "friendsofsymfony/rest-bundle": "^2.7",
+        "fzaninotto/faker": "^1.9",
         "laminas/laminas-code": "^3.4",
         "laminas/laminas-eventmanager": "^3.2",
         "sensio/framework-extra-bundle": "^5.5",
@@ -32,6 +33,7 @@
     },
     "require-dev": {
         "behat/behat": "^3.6",
+        "doctrine/doctrine-fixtures-bundle": "^3.3",
         "symfony/browser-kit": "4.3.*",
         "symfony/css-selector": "4.3.*",
         "symfony/debug-pack": "*",

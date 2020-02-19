@@ -29,12 +29,12 @@ class Proposal
     private $created_at;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $textContent;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $link;
 
@@ -81,6 +81,9 @@ class Proposal
 
     public function __construct()
     {
+        $this->created_at = new \DateTime('now');
+        $this->is_published = false;
+        
         $this->reviews = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
