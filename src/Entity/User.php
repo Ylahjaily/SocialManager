@@ -58,11 +58,13 @@ class User implements Userinterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Proposal", mappedBy="user_id")
+     * @Groups({"user:read"})
      */
     private $proposals;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Review", mappedBy="user_id", orphanRemoval=true)
+     * @Groups({"user:read"})
      */
     private $reviews;
 
