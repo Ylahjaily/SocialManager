@@ -57,7 +57,7 @@ class User implements Userinterface
     private $created_at;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Proposal", mappedBy="user_id")
+     * @ORM\OneToMany(targetEntity="App\Entity\Proposal", mappedBy="user_id", orphanRemoval=true)
      * @Groups({"user:read"})
      */
     private $proposals;
