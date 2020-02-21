@@ -47,4 +47,19 @@ class UserController extends AbstractFOSRestController
         $em->flush();
         return $this->view($user);
     }
+
+    /**
+     * @Rest\Delete("api/users/{email}")
+     */
+    public function deleteApiUser(User $user, EntityManagerInterface $em)
+    {
+        if($user)
+        {
+            
+            $em->remove($user);
+            $em->flush();
+            return $this->view("La suppression a bien été effectuée");
+        }
+
+    }
 }
