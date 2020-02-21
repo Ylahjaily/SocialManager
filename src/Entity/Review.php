@@ -5,8 +5,15 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
+ * @ApiResource(
+ * normalizationContext={"groups"={"user:read"}},
+ * denormalizationContext={"groups"={"user:write"}},
+ * )
+ * @ORM\Entity(repositoryClass="App\Repository\ProposalRepository")
  * @ORM\Entity(repositoryClass="App\Repository\ReviewRepository")
  */
 class Review
@@ -21,32 +28,38 @@ class Review
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"user:write"})
      */
     private $proposal_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"user:read"})
      */
     private $user_id;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"user:read"})
      */
     private $is_approved;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"user:read"})
      */
     private $decision_at;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\ReviewComment", mappedBy="review_id", orphanRemoval=true)
+     * @Groups({"user:read"})
      */
     private $reviewComments;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"user:read"})
      */
     private $created_at;
 
