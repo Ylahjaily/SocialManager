@@ -54,8 +54,7 @@ class UserController extends AbstractFOSRestController
     public function deleteApiUser(User $user, EntityManagerInterface $em)
     {
         if($user)
-        {
-            
+        {      
             $em->remove($user);
             $em->flush();
             return $this->view("La suppression a bien été effectuée");
