@@ -3,8 +3,14 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
+ * @ApiResource(
+ * normalizationContext={"groups"={"comment:read"}},
+ * denormalizationContext={"groups"={"comment:write"}},
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  */
 class Comment
@@ -13,17 +19,20 @@ class Comment
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"comment:read", "comment:write"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"comment:read", "comment:write"})
      */
     private $content;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"comment:read", "comment:write"})
      */
     private $proposal_id;
 
@@ -60,6 +69,9 @@ class Comment
         return $this;
     }
 
+    /**
+     * @Groups("comment:read")
+     */
     public function getProposalId(): ?Proposal
     {
         return $this->proposal_id;
@@ -72,6 +84,9 @@ class Comment
         return $this;
     }
 
+    /**
+     * @Groups("comment:read")
+     */
     public function getUserId(): ?User
     {
         return $this->user_id;
@@ -84,6 +99,9 @@ class Comment
         return $this;
     }
 
+    /**
+     * @Groups("comment:read")
+     */
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
