@@ -70,4 +70,18 @@ class ReviewController extends AbstractFOSRestController
     
     }
 
+    /**
+     * @Rest\Delete("api/reviews/{id}")
+     */
+    public function deleteApiReview(Review $review, EntityManagerInterface $em)
+    {
+        if($review)
+        {      
+            $em->remove($review);
+            $em->flush();
+            return $this->view("La suppression a bien été effectuée");
+        }
+
+    }
+
 }
