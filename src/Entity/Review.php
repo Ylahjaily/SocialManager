@@ -10,10 +10,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- * normalizationContext={"groups"={"user:read"}},
- * denormalizationContext={"groups"={"user:write"}},
+ * normalizationContext={"groups"={"review:read"}},
+ * denormalizationContext={"groups"={"review:write"}},
  * )
- * @ORM\Entity(repositoryClass="App\Repository\ProposalRepository")
  * @ORM\Entity(repositoryClass="App\Repository\ReviewRepository")
  */
 class Review
@@ -22,44 +21,45 @@ class Review
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"review:read"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"user:write"})
+     * @Groups({"review:read"})
      */
     private $proposal_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"user:read"})
+     * @Groups({"review:read"})
      */
     private $user_id;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user:read"})
+     * @Groups({"review:read", "review:write"})
      */
     private $is_approved;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user:read"})
+     * @Groups({"review:read"})
      */
     private $decision_at;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\ReviewComment", mappedBy="review_id", orphanRemoval=true)
-     * @Groups({"user:read"})
+     * @Groups({"review:read"})
      */
     private $reviewComments;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user:read"})
+     * @Groups({"review:read"})
      */
     private $created_at;
 
@@ -74,6 +74,9 @@ class Review
         return $this->id;
     }
 
+    /**
+     * @Groups("review:read")
+     */
     public function getProposalId(): ?Proposal
     {
         return $this->proposal_id;
@@ -86,6 +89,9 @@ class Review
         return $this;
     }
 
+    /**
+     * @Groups("review:read")
+     */
     public function getUserId(): ?User
     {
         return $this->user_id;
@@ -98,6 +104,9 @@ class Review
         return $this;
     }
 
+    /**
+     * @Groups("review:read")
+     */
     public function getIsApproved(): ?bool
     {
         return $this->is_approved;
@@ -110,6 +119,9 @@ class Review
         return $this;
     }
 
+    /**
+     * @Groups("review:read")
+     */
     public function getDecisionAt(): ?\DateTimeInterface
     {
         return $this->decision_at;
@@ -153,6 +165,9 @@ class Review
         return $this;
     }
 
+    /**
+     * @Groups({"review:read"})
+     */
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
