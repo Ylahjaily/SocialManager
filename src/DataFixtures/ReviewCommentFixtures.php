@@ -61,6 +61,7 @@ class ReviewCommentFixtures extends Fixture
             $commReview= new ReviewComment();
             $commReview->setComments($faker->text($maxNbChars = 200));
             $commReview->setReviewId($review_to);
+            $commReview->setUserId($user_x);
             $manager->persist($commReview);
         }
         $manager->flush();

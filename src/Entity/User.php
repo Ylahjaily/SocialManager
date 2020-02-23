@@ -96,6 +96,11 @@ class User implements Userinterface
      */
     private $password;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ReviewComment", mappedBy="user_id", orphanRemoval=true)
+     */
+    private $reviewComments;
+
     public function __construct()
     {
         $this->roles = array('ROLE_USER');
@@ -106,6 +111,7 @@ class User implements Userinterface
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
         $this->socialNetworks = new ArrayCollection();
+        $this->reviewComments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -375,5 +381,36 @@ class User implements Userinterface
     public function eraseCredentials()
     {
         // TODO: Implement eraseCredentials() method.
+    }
+
+    /**
+     * @return Collection|ReviewComment[]
+     */
+    public function getReviewComments(): Collection
+    {
+        return $this->reviewComments;
+    }
+
+    public function addReviewComment(ReviewComment $reviewComment): self
+    {
+        if (!$this->reviewComments->contains($reviewComment)) {
+            $this->reviewComments[] = $reviewComment;
+            $reviewComment->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReviewComment(ReviewComment $reviewComment): self
+    {
+        if ($this->reviewComments->contains($reviewComment)) {
+            $this->reviewComments->removeElement($reviewComment);
+            // set the owning side to null (unless already changed)
+            if ($reviewComment->getUserId() === $this) {
+                $reviewComment->setUserId(null);
+            }
+        }
+
+        return $this;
     }
 }
