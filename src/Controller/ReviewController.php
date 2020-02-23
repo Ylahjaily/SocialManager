@@ -50,7 +50,6 @@ class ReviewController extends AbstractFOSRestController
 
         if(!is_null($request->get('proposal_id'))) {
             $proposal = $proposalRepository->find($request->get('proposal_id')); 
-            
             if(!is_null($proposal)) {
                 $review->setProposalId($proposal);
             }
