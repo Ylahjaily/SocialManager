@@ -59,8 +59,7 @@ class CommentController extends AbstractFOSRestController
         }
 
         if(!is_null($request->get('proposal_id'))) {
-            $proposal = $proposalRepository->find($request->get('proposal_id'));
-            
+            $proposal = $proposalRepository->find($request->get('proposal_id'));       
             if(!is_null($proposal)) {
                 $comment->setProposalId($proposal);
             }
