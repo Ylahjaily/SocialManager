@@ -126,6 +126,9 @@ class Proposal
         return $this;
     }
 
+    /**
+     * @Groups({"user:read"})
+     */
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
@@ -162,6 +165,9 @@ class Proposal
         return $this;
     }
 
+    /**
+     * @Groups({"user:read"})
+     */
     public function getIsPublished(): ?bool
     {
         return $this->is_published;
@@ -174,6 +180,9 @@ class Proposal
         return $this;
     }
 
+    /**
+     * @Groups({"user:read"})
+     */
     public function getDatePublicationAt(): ?\DateTimeInterface
     {
         return $this->date_publication_at;
@@ -186,6 +195,9 @@ class Proposal
         return $this;
     }
 
+    /**
+     * @Groups({"user:read"})
+     */
     public function getUserId(): ?User
     {
         return $this->user_id;
@@ -319,6 +331,9 @@ class Proposal
         return $this;
     }
 
+    /**
+     * @Groups({"user:read"})
+     */
     public function getUploadedDocument(): ?UploadedDocument
     {
         return $this->uploadedDocument;
