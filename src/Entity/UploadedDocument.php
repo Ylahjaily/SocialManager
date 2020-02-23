@@ -3,8 +3,14 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
+ * @ApiResource(
+ * normalizationContext={"groups"={"uploaded_document:read"}},
+ * denormalizationContext={"groups"={"uploaded_document:write"}},
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\UploadedDocumentRepository")
  */
 class UploadedDocument
@@ -13,22 +19,26 @@ class UploadedDocument
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"uploaded_document:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"uploaded_document:read", "uploaded_document:write"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="blob")
+     * @Groups({"uploaded_document:read", "uploaded_document:write"})
      */
     private $data;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\Proposal", inversedBy="uploadedDocument", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"uploaded_document:read"})
      */
     private $proposal_id;
 
@@ -61,6 +71,9 @@ class UploadedDocument
         return $this;
     }
 
+    /**
+     * @Groups({"review_comment:read"})
+     */
     public function getProposalId(): ?Proposal
     {
         return $this->proposal_id;
