@@ -76,6 +76,20 @@ class CommentController extends AbstractFOSRestController
         $em->flush();
 
         return $this->view($comment);
+    
+    }
+
+    /**
+     * @Rest\Delete("api/comments/{id}")
+     */
+    public function deleteApiComment(Comment $comment, EntityManagerInterface $em)
+    {
+        if($comment)
+        {      
+            $em->remove($comment);
+            $em->flush();
+            return $this->view("La suppression a bien été effectuée");
+        }
 
     }
 
