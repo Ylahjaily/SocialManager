@@ -2,13 +2,10 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\ReviewComment;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\ReviewCommentRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
@@ -35,7 +32,7 @@ class ReviewCommentController extends AbstractFOSRestController
         $review_comments=$this->reviewCommentRepo->findAll();
         return $this->view($review_comments);
     }
-    
+
     /**
      * @Rest\Get("/api/review_comments/{id}")
      */
@@ -50,7 +47,7 @@ class ReviewCommentController extends AbstractFOSRestController
     public function postApiReviewComment(Request $request, ReviewRepository $reviewRepository, UserRepository $userRepository, EntityManagerInterface $em)
     {
         $reviewComment=new ReviewComment();
-        
+
         foreach(static::$postReviewCommentRequiredAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
                 continue;
@@ -59,7 +56,7 @@ class ReviewCommentController extends AbstractFOSRestController
         }
 
         if(!is_null($request->get('review_id'))) {
-            $review = $reviewRepository->find($request->get('review_id'));     
+            $review = $reviewRepository->find($request->get('review_id'));
             if(!is_null($review)) {
                 $reviewComment->setReviewId($review);
             }
@@ -71,12 +68,12 @@ class ReviewCommentController extends AbstractFOSRestController
                 $reviewComment->setUserId($user);
             }
         }
-        
+
         $em->persist($reviewComment);
         $em->flush();
 
         return $this->view($reviewComment);
-    
+
     }
 
     /**
@@ -85,7 +82,7 @@ class ReviewCommentController extends AbstractFOSRestController
     public function deleteApiReviewComment(ReviewComment $reviewComment, EntityManagerInterface $em)
     {
         if($reviewComment)
-        {      
+        {
             $em->remove($reviewComment);
             $em->flush();
             return $this->view("La suppression a bien été effectuée");
