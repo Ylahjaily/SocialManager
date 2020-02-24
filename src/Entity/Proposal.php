@@ -9,10 +9,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * 
+ *
  * @ApiResource(
- * normalizationContext={"groups"={"user:read"}},
- * denormalizationContext={"groups"={"user:write"}},
+ * normalizationContext={"groups"={"proposal:read"}},
+ * denormalizationContext={"groups"={"proposal:write"}},
  * )
  * @ORM\Entity(repositoryClass="App\Repository\ProposalRepository")
  */
@@ -22,79 +22,80 @@ class Proposal
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"proposal:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:read"})
+     * @Groups({"proposal:read"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user:read"})
+     * @Groups({"proposal:read"})
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"user:read"})
+     * @Groups({"proposal:read"})
      */
     private $textContent;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user:read"})
+     * @Groups({"proposal:read"})
      */
     private $link;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user:read"})
+     * @Groups({"proposal:read"})
      */
     private $is_published;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user:read"})
+     * @Groups({"proposal:read"})
      */
     private $date_publication_at;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="proposals")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"user:write"})
+     * @Groups({"proposal:read"})
      */
     private $user_id;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Review", mappedBy="proposal_id", orphanRemoval=true)
-     * @Groups({"user:read"})
+     * @Groups({"proposal:read","review:read"})
      */
     private $reviews;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="proposal_id", orphanRemoval=true)
-     * @Groups({"user:read"})
+     * @Groups({"proposal:read"})
      */
     private $comments;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Like", mappedBy="proposal_id", orphanRemoval=true)
-     * @Groups({"user:read"})
+     * @Groups({"proposal:read"})
      */
     private $likes;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\SocialNetwork", mappedBy="proposals")
-     * @Groups({"user:read"})
+     * @Groups({"proposal:read"})
      */
     private $socialNetworks;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\UploadedDocument", mappedBy="proposal_id", cascade={"persist", "remove"})
-     * @Groups({"user:read"})
+     * @Groups({"proposal:read"})
      */
     private $uploadedDocument;
 
@@ -102,7 +103,7 @@ class Proposal
     {
         $this->created_at = new \DateTime('now');
         $this->is_published = false;
-        
+
         $this->reviews = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();

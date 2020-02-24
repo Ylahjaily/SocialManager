@@ -23,6 +23,7 @@ class User implements Userinterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"proposal:read"})
      */
     private $id;
 
@@ -105,7 +106,7 @@ class User implements Userinterface
     {
         $this->roles = array('ROLE_USER');
         $this->created_at = new \DateTime('now');
-        
+
         $this->proposals = new ArrayCollection();
         $this->reviews = new ArrayCollection();
         $this->comments = new ArrayCollection();
