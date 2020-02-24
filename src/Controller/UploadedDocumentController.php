@@ -2,13 +2,10 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\UploadedDocument;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\UploadedDocumentRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\ProposalRepository;
@@ -35,7 +32,7 @@ class UploadedDocumentController extends AbstractFOSRestController
         $uploaded_documents=$this->uploadedDocRepo->findAll();
         return $this->view($uploaded_documents);
     }
-    
+
     /**
      * @Rest\Get("/api/up_docs/{id}")
      */
@@ -50,7 +47,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     public function postApiUploadedDocument(Request $request, ProposalRepository $proposalRepo, EntityManagerInterface $em)
     {
         $uploadedDocument=new UploadedDocument();
-        
+
         foreach(static::$postUploadedDocumentRequiredAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
                 continue;
@@ -59,17 +56,17 @@ class UploadedDocumentController extends AbstractFOSRestController
         }
 
         if(!is_null($request->get('proposal_id'))) {
-            $proposal = $proposalRepository->find($request->get('proposal_id'));     
+            $proposal = $proposalRepository->find($request->get('proposal_id'));
             if(!is_null($proposal)) {
                 $uploadedDocument->setProposalId($proposal);
             }
         }
-        
+
         $em->persist($uploadedDocument);
         $em->flush();
 
         return $this->view($uploadedDocument);
-    
+
     }
 
     /**
@@ -78,7 +75,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     public function deleteApiUploadedDocument(UploadedDocument $UploadedDocument, EntityManagerInterface $em)
     {
         if($uploadedDocument)
-        {      
+        {
             $em->remove($uploadedDocument);
             $em->flush();
             return $this->view("La suppression a bien été effectuée");

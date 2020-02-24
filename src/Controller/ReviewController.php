@@ -2,13 +2,10 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Review;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\ReviewRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
@@ -31,7 +28,7 @@ class ReviewController extends AbstractFOSRestController
         $reviews=$this->reviewRepo->findAll();
         return $this->view($reviews);
     }
-    
+
     /**
      * @Rest\Get("/api/reviews/{id}")
      */
@@ -49,7 +46,7 @@ class ReviewController extends AbstractFOSRestController
         $review->setIsApproved(false);
 
         if(!is_null($request->get('proposal_id'))) {
-            $proposal = $proposalRepository->find($request->get('proposal_id')); 
+            $proposal = $proposalRepository->find($request->get('proposal_id'));
             if(!is_null($proposal)) {
                 $review->setProposalId($proposal);
             }
@@ -61,12 +58,12 @@ class ReviewController extends AbstractFOSRestController
                 $review->setUserId($user);
             }
         }
-        
+
         $em->persist($review);
         $em->flush();
 
         return $this->view($review);
-    
+
     }
 
     /**
@@ -75,7 +72,7 @@ class ReviewController extends AbstractFOSRestController
     public function deleteApiReview(Review $review, EntityManagerInterface $em)
     {
         if($review)
-        {      
+        {
             $em->remove($review);
             $em->flush();
             return $this->view("La suppression a bien été effectuée");

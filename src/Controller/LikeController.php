@@ -2,13 +2,10 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Like;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\LikeRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
@@ -31,7 +28,7 @@ class LikeController extends AbstractFOSRestController
         $likes=$this->likeRepo->findAll();
         return $this->view($likes);
     }
-    
+
     /**
      * @Rest\Get("/api/likes/{id}")
      */
@@ -48,7 +45,7 @@ class LikeController extends AbstractFOSRestController
         $like=new Like();
 
         if(!is_null($request->get('proposal_id'))) {
-            $proposal = $proposalRepository->find($request->get('proposal_id'));     
+            $proposal = $proposalRepository->find($request->get('proposal_id'));
             if(!is_null($proposal)) {
                 $like->setProposalId($proposal);
             }
@@ -60,12 +57,12 @@ class LikeController extends AbstractFOSRestController
                 $like->setUserId($user);
             }
         }
-        
+
         $em->persist($like);
         $em->flush();
 
         return $this->view($like);
-    
+
     }
 
     /**
@@ -74,7 +71,7 @@ class LikeController extends AbstractFOSRestController
     public function deleteApiLike(Like $like, EntityManagerInterface $em)
     {
         if($like)
-        {      
+        {
             $em->remove($like);
             $em->flush();
             return $this->view("La suppression a bien été effectuée");
