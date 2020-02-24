@@ -2,13 +2,10 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Comment;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\CommentRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UserRepository;
 use App\Repository\ProposalRepository;
@@ -59,7 +56,7 @@ class CommentController extends AbstractFOSRestController
         }
 
         if(!is_null($request->get('proposal_id'))) {
-            $proposal = $proposalRepository->find($request->get('proposal_id'));       
+            $proposal = $proposalRepository->find($request->get('proposal_id'));
             if(!is_null($proposal)) {
                 $comment->setProposalId($proposal);
             }
@@ -75,7 +72,7 @@ class CommentController extends AbstractFOSRestController
         $em->flush();
 
         return $this->view($comment);
-    
+
     }
 
     /**
@@ -84,7 +81,7 @@ class CommentController extends AbstractFOSRestController
     public function deleteApiComment(Comment $comment, EntityManagerInterface $em)
     {
         if($comment)
-        {      
+        {
             $em->remove($comment);
             $em->flush();
             return $this->view("La suppression a bien été effectuée");

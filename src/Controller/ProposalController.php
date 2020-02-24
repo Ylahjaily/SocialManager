@@ -2,13 +2,12 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\User;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Entity\Proposal;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\ProposalRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
@@ -16,7 +15,7 @@ use App\Repository\UserRepository;
 class ProposalController extends AbstractFOSRestController
 {
     private $proposalRepo;
-    
+
     static private $postProposalRequiredAttributes = [
         'title' => 'setTitle',
         'textContent' => 'setTextContent',
@@ -43,6 +42,22 @@ class ProposalController extends AbstractFOSRestController
     {
         $proposals=$this->proposalRepo->findApprovedProposal();
         return $this->view($proposals);
+    }
+
+    /**
+     * @Rest\Get("/api/reviewer/{id}/proposals")
+     */
+    public function getApiApprovedProposalsByReviewer(User $user)
+    {
+        if(!$user) {
+            throw new NotFoundHttpException('This user does not exist');
+        }
+            $proposals=$this->proposalRepo->findApprovedProposalByReviewer($user);
+
+        if(!$proposals) {
+            throw new NotFoundHttpException('Proposal does not exist');
+        }
+            return $this->view($proposals);
     }
 
     /**

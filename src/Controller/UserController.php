@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -33,10 +31,10 @@ class UserController extends AbstractFOSRestController
      */
     public function getApiUsers()
     {
-        $users = $this->userRepo->findAll(); 
+        $users = $this->userRepo->findAll();
         return $this->view($users);
     }
-    
+
     /**
      * @ParamConverter("user", converter="fos_rest.request_body")
      * @Rest\Post("api/users/")
@@ -54,7 +52,7 @@ class UserController extends AbstractFOSRestController
     public function deleteApiUser(User $user, EntityManagerInterface $em)
     {
         if($user)
-        {      
+        {
             $em->remove($user);
             $em->flush();
             return $this->view("La suppression a bien été effectuée");
