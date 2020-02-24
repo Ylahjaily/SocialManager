@@ -28,14 +28,23 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/proposals/")
+     * @Rest\Get("/api/proposals")
      */
     public function getApiProposals()
     {
         $proposals=$this->proposalRepo->findAll();
         return $this->view($proposals);
     }
-    
+
+    /**
+     * @Rest\Get("/api/proposals/approved")
+     */
+    public function getApiApprovedProposals()
+    {
+        $proposals=$this->proposalRepo->findApprovedProposal();
+        return $this->view($proposals);
+    }
+
     /**
      * @Rest\Get("/api/proposals/{id}")
      */
@@ -45,7 +54,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/proposals/")
+     * @Rest\Post("/api/proposals")
      */
     public function postApiProposal(Request $request, UserRepository $userRepository, EntityManagerInterface $em)
     {
@@ -64,12 +73,12 @@ class ProposalController extends AbstractFOSRestController
                 $proposal->setUserId($user);
             }
         }
-        
+
         $em->persist($proposal);
         $em->flush();
 
         return $this->view($proposal);
-    
+
     }
 
     /**
@@ -78,7 +87,7 @@ class ProposalController extends AbstractFOSRestController
     public function deleteApiProposal(Proposal $proposal, EntityManagerInterface $em)
     {
         if($proposal)
-        {      
+        {
             $em->remove($proposal);
             $em->flush();
             return $this->view("La suppression a bien été effectuée");

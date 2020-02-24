@@ -47,4 +47,19 @@ class ProposalRepository extends ServiceEntityRepository
         ;
     }
     */
+
+     /**
+      * @return Proposal[] Returns an array of Proposal objects
+     */
+    public function findApprovedProposal()
+    {
+        return $this->createQueryBuilder('proposal')
+            ->innerJoin('proposal.reviews','reviews')
+            ->addSelect('reviews')
+            ->where('reviews.is_approved = true')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 }

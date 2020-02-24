@@ -41,7 +41,7 @@ class Review
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"review:read", "review:write"})
+     * @Groups({"review:read", "review:write","proposal:read"})
      */
     private $is_approved;
 
