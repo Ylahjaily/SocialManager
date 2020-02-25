@@ -95,6 +95,22 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
+     * @Rest\Get("/api/member/{id}/proposals/rejected")
+     */
+    public function getApiRejectedProposalsByMember(User $user)
+    {
+        if(!$user) {
+            throw new NotFoundHttpException('This user does not exist');
+        }
+        $proposals=$this->proposalRepo->findRejectedProposalsByMember($user);
+
+        if(!$proposals) {
+            throw new NotFoundHttpException('Proposal does not exist');
+        }
+        return $this->view($proposals);
+    }
+
+    /**
      * @Rest\Get("/api/proposals/{id}")
      */
     public function getApiProposalById(Proposal $proposal)
