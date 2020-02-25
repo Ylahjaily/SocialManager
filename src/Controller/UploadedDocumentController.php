@@ -19,6 +19,10 @@ class UploadedDocumentController extends AbstractFOSRestController
         'data' => 'setData',
     ];
 
+    static private $patchUploadedDocumentModifiableAttributes = [
+        'title' => 'setTitle'
+    ];
+
     public function __construct(UploadedDocumentRepository $uploadedDocRepo)
     {
         $this->uploadedDocRepo=$uploadedDocRepo;
@@ -72,7 +76,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     /**
      * @Rest\Delete("api/up_docs/{id}")
      */
-    public function deleteApiUploadedDocument(UploadedDocument $UploadedDocument, EntityManagerInterface $em)
+    public function deleteApiUploadedDocument(UploadedDocument $uploadedDocument, EntityManagerInterface $em)
     {
         if($uploadedDocument)
         {
@@ -80,7 +84,21 @@ class UploadedDocumentController extends AbstractFOSRestController
             $em->flush();
             return $this->view("La suppression a bien été effectuée");
         }
+    }
 
+    /**
+     * @Rest\Patch("api/up_docs/{id}")
+     */
+    public function patchApiUploadedDocument(UploadedDocument $uploadedDocument, Request $request,EntityManagerInterface $em)
+    {
+        foreach(static::$patchUploadedDocumentModifiableAttributes as $attribute => $setter) {
+            if(is_null($request->get($attribute))) {
+                continue;
+            }
+            $uploadedDocument->$setter($request->get($attribute));
+        }
+        $em->flush();
+        return $this->view($uploadedDocument);
     }
 
 }
