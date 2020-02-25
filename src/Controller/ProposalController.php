@@ -40,7 +40,16 @@ class ProposalController extends AbstractFOSRestController
      */
     public function getApiApprovedProposals()
     {
-        $proposals=$this->proposalRepo->findApprovedProposal();
+        $proposals=$this->proposalRepo->findApprovedProposals();
+        return $this->view($proposals);
+    }
+
+    /**
+     * @Rest\Get("/api/proposals/unprocessed")
+     */
+    public function getApiUnProcessedProposals()
+    {
+        $proposals=$this->proposalRepo->findUnProcessedProposals();
         return $this->view($proposals);
     }
 
@@ -63,7 +72,7 @@ class ProposalController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/proposals/{id}")
      */
-    public function getApiProposal(Proposal $proposal)
+    public function getApiProposalById(Proposal $proposal)
     {
         return $this->view($proposal);
     }

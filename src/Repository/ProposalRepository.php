@@ -19,39 +19,10 @@ class ProposalRepository extends ServiceEntityRepository
         parent::__construct($registry, Proposal::class);
     }
 
-    // /**
-    //  * @return Proposal[] Returns an array of Proposal objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Proposal
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
-
      /**
       * @return Proposal[] Returns an array of Proposal objects
      */
-    public function findApprovedProposal()
+    public function findApprovedProposals()
     {
         return $this->createQueryBuilder('proposal')
             ->innerJoin('proposal.reviews','reviews')
@@ -60,6 +31,19 @@ class ProposalRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
         ;
+    }
+
+    /**
+     * @return Proposal[] Returns an array of Proposal objects
+     */
+    public function findUnProcessedProposals()
+    {
+        return $this->createQueryBuilder('proposal')
+            ->select('proposal')
+            ->where( 'SIZE(proposal.reviews) = 0')
+            ->getQuery()
+            ->getResult()
+            ;
     }
 
     /**
