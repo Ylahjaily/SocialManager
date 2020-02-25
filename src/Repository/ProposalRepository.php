@@ -62,4 +62,20 @@ class ProposalRepository extends ServiceEntityRepository
             ;
     }
 
+    /**
+     * @return Proposal[] Returns an array of Proposal objects
+     */
+    public function findRejectedProposalsByReviewer($user)
+    {
+        return $this->createQueryBuilder('proposal')
+            ->innerJoin('proposal.reviews','reviews')
+            ->addSelect('reviews')
+            ->setParameter('user', $user)
+            ->where('reviews.is_approved = false')
+            ->andWhere('reviews.user_id = :user')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
 }
