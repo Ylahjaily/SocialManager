@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-/l**
+/**
  * @ApiResource(
  * normalizationContext={"groups"={"social_network:read"}},
  * denormalizationContext={"groups"={"social_network:write"}},
