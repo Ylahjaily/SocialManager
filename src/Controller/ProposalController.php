@@ -63,19 +63,35 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/reviewer/{id}/proposals")
-     */
+ * @Rest\Get("/api/reviewer/{id}/proposals")
+ */
     public function getApiApprovedProposalsByReviewer(User $user)
     {
         if(!$user) {
             throw new NotFoundHttpException('This user does not exist');
         }
-            $proposals=$this->proposalRepo->findApprovedProposalByReviewer($user);
+        $proposals=$this->proposalRepo->findApprovedProposalByReviewer($user);
 
         if(!$proposals) {
             throw new NotFoundHttpException('Proposal does not exist');
         }
-            return $this->view($proposals);
+        return $this->view($proposals);
+    }
+
+    /**
+     * @Rest\Get("/api/reviewer/{id}/proposals/rejected")
+     */
+    public function getApiRejectedProposalsByReviewer(User $user)
+    {
+        if(!$user) {
+            throw new NotFoundHttpException('This user does not exist');
+        }
+        $proposals=$this->proposalRepo->findRejectedProposalsByReviewer($user);
+
+        if(!$proposals) {
+            throw new NotFoundHttpException('Proposal does not exist');
+        }
+        return $this->view($proposals);
     }
 
     /**
