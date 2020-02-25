@@ -19,6 +19,10 @@ class CommentController extends AbstractFOSRestController
         'content' => 'setContent',
     ];
 
+    static private $patchCommentModifiableAttributes = [
+        'content' => 'setContent',
+    ];
+
     public function __construct(CommentRepository $commentRepo)
     {
         $this->commentRepo=$commentRepo;
@@ -86,7 +90,21 @@ class CommentController extends AbstractFOSRestController
             $em->flush();
             return $this->view("La suppression a bien été effectuée");
         }
+    }
 
+    /**
+     * @Rest\Patch("api/comments/{id}")
+     */
+    public function patchApiComment(Comment $comment, Request $request,EntityManagerInterface $em)
+    {
+        foreach(static::$patchCommentModifiableAttributes as $attribute => $setter) {
+            if(is_null($request->get($attribute))) {
+                continue;
+            }
+            $comment->$setter($request->get($attribute));
+        }
+        $em->flush();
+        return $this->view($comment);
     }
 
 }

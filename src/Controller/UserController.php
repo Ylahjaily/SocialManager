@@ -8,10 +8,19 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\UserRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class UserController extends AbstractFOSRestController
 {
     private $userRepo;
+    
+    static private $patchUserModifiableAttributes = [
+        'lastName' => 'setLastName',
+        'firstName' => 'setFirstName',
+        'roles' => 'setRoles',
+        'apiKey' => 'setApiKey',
+        'password' => 'setPassword',
+    ];
 
     public function __construct(UserRepository $userRepo)
     {
@@ -57,6 +66,20 @@ class UserController extends AbstractFOSRestController
             $em->flush();
             return $this->view("La suppression a bien été effectuée");
         }
+    }
 
+    /**
+     * @Rest\Patch("api/users/{id}")
+     */
+    public function patchApiUser(User $user, Request $request,EntityManagerInterface $em)
+    {
+        foreach(static::$patchUserModifiableAttributes as $attribute => $setter) {
+            if(is_null($request->get($attribute))) {
+                continue;
+            }
+            $user->$setter($request->get($attribute));
+        }
+        $em->flush();
+        return $this->view($user);
     }
 }

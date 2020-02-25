@@ -21,6 +21,15 @@ class ProposalController extends AbstractFOSRestController
         'textContent' => 'setTextContent',
     ];
 
+    static private $patchProposalModifiableAttributes = [
+        'title' => 'setTitle',
+        'textContent' => 'setTextContent',
+        'link' => 'setLink',
+        'is_published' => 'setIsPublished',
+        'date_publication_at' => 'setDatePublicationAt',
+    ];
+
+
     public function __construct(ProposalRepository $proposalRepo)
     {
         $this->proposalRepo=$proposalRepo;
@@ -116,7 +125,21 @@ class ProposalController extends AbstractFOSRestController
             $em->flush();
             return $this->view("La suppression a bien été effectuée");
         }
+    }
 
+    /**
+     * @Rest\Patch("api/proposals/{id}")
+     */
+    public function patchApiProposal(Proposal $proposal, Request $request,EntityManagerInterface $em)
+    {
+        foreach(static::$patchProposalModifiableAttributes as $attribute => $setter) {
+            if(is_null($request->get($attribute))) {
+                continue;
+            }
+            $proposal->$setter($request->get($attribute));
+        }
+        $em->flush();
+        return $this->view($proposal);
     }
 
 }

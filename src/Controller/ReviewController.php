@@ -15,6 +15,11 @@ class ReviewController extends AbstractFOSRestController
 {
     private $reviewRepo;
 
+    static private $patchReviewModifiableAttributes = [
+        'is_approved' => 'setIsApproved',
+        'decision_at' => 'setDecisionAt',
+    ];
+
     public function __construct(ReviewRepository $reviewRepo)
     {
         $this->reviewRepo=$reviewRepo;
@@ -77,7 +82,21 @@ class ReviewController extends AbstractFOSRestController
             $em->flush();
             return $this->view("La suppression a bien été effectuée");
         }
+    }
 
+    /**
+     * @Rest\Patch("api/reviews/{id}")
+     */
+    public function patchApiReview(Review $review, Request $request,EntityManagerInterface $em)
+    {
+        foreach(static::$patchReviewModifiableAttributes as $attribute => $setter) {
+            if(is_null($request->get($attribute))) {
+                continue;
+            }
+            $review->$setter($request->get($attribute));
+        }
+        $em->flush();
+        return $this->view($review);
     }
 
 }
