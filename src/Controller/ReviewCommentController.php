@@ -19,6 +19,10 @@ class ReviewCommentController extends AbstractFOSRestController
         'comments' => 'setComments',
     ];
 
+    static private $patchReviewCommentModifiableAttributes = [
+        'comments' => 'setComments',
+    ];
+
     public function __construct(ReviewCommentRepository $reviewCommentRepo)
     {
         $this->reviewCommentRepo=$reviewCommentRepo;
@@ -87,7 +91,21 @@ class ReviewCommentController extends AbstractFOSRestController
             $em->flush();
             return $this->view("La suppression a bien été effectuée");
         }
+    }
 
+    /**
+     * @Rest\Patch("api/review_comments/{id}")
+     */
+    public function patchApiReviewComment(ReviewComment $reviewComment, Request $request,EntityManagerInterface $em)
+    {
+        foreach(static::$patchReviewCommentModifiableAttributes as $attribute => $setter) {
+            if(is_null($request->get($attribute))) {
+                continue;
+            }
+            $reviewComment->$setter($request->get($attribute));
+        }
+        $em->flush();
+        return $this->view($reviewComment);
     }
 
 }
