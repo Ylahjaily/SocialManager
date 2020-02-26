@@ -132,6 +132,14 @@ class ProposalController extends AbstractFOSRestController
             $proposal->$setter($request->get($attribute));
         }
 
+        if(!is_null($request->get('link'))) {
+            $link = $request->get('link');
+            if(preg_match('#^(http|https)://[\w-]+[\w.-]+\.[a-zA-Z]{2,6}#i', $link))
+            {
+                $proposal->setLink($link);
+            }
+        }
+
         if(!is_null($request->get('user_id'))) {
             $user = $userRepository->find($request->get('user_id'));
             if(!is_null($user)) {
@@ -167,8 +175,16 @@ class ProposalController extends AbstractFOSRestController
         foreach(static::$patchProposalModifiableAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
                 continue;
-            }
+            } 
             $proposal->$setter($request->get($attribute));
+        }
+        
+        if(!is_null($request->get('link'))) {
+            $link = $request->get('link');
+            if(preg_match('#^(http|https)://[\w-]+[\w.-]+\.[a-zA-Z]{2,6}#i', $link))
+            {
+                $proposal->setLink($link);
+            }
         }
         $em->flush();
         return $this->view($proposal);
