@@ -1,4 +1,6 @@
 {
+    "name": "Social Manager",
+    "description": "A platform which can post some Tweets",
     "type": "project",
     "license": "proprietary",
     "require": {
