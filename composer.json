@@ -1,5 +1,5 @@
 {
-    "name": "socialmanager",
+    "name": "vendor/socialmanager",
     "description": "A platform which can post some Tweets",
     "type": "project",
     "license": "proprietary",
