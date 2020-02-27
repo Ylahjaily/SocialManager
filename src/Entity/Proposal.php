@@ -99,6 +99,11 @@ class Proposal
      */
     private $uploadedDocument;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     */
+    private $published_by;
+
     public function __construct()
     {
         $this->created_at = new \DateTime('now');
@@ -348,6 +353,18 @@ class Proposal
         if ($uploadedDocument->getProposalId() !== $this) {
             $uploadedDocument->setProposalId($this);
         }
+
+        return $this;
+    }
+
+    public function getPublishedBy(): ?User
+    {
+        return $this->published_by;
+    }
+
+    public function setPublishedBy(?User $published_by): self
+    {
+        $this->published_by = $published_by;
 
         return $this;
     }
