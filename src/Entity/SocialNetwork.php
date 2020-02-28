@@ -16,12 +16,13 @@ class SocialNetwork
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $id;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="socialNetworks")
+     * @Groups({"proposal"})
      */
     private $user_id;
 
@@ -33,7 +34,7 @@ class SocialNetwork
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $name;
 

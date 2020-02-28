@@ -15,7 +15,7 @@ class Like
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $id;
 
@@ -29,6 +29,7 @@ class Like
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="likes")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"proposal"})
      */
     private $user_id;
 

@@ -14,13 +14,13 @@ class Comment
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $content;
 
@@ -34,12 +34,14 @@ class Comment
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"proposal"})
      */
     private $user_id;
 
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $created_at;
 
@@ -65,9 +67,6 @@ class Comment
         return $this;
     }
 
-    /**
-     * @Groups("comment:read")
-     */
     public function getProposalId(): ?Proposal
     {
         return $this->proposal_id;
@@ -80,9 +79,6 @@ class Comment
         return $this;
     }
 
-    /**
-     * @Groups("comment:read")
-     */
     public function getUserId(): ?User
     {
         return $this->user_id;
@@ -95,9 +91,6 @@ class Comment
         return $this;
     }
 
-    /**
-     * @Groups("comment:read")
-     */
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
