@@ -18,37 +18,37 @@ class User implements Userinterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="simple_array")
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $roles = [];
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $created_at;
 
@@ -66,7 +66,7 @@ class User implements Userinterface
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $apiKey;
 
@@ -84,7 +84,7 @@ class User implements Userinterface
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\SocialNetwork", mappedBy="user_id")
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $socialNetworks;
 
@@ -101,7 +101,7 @@ class User implements Userinterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Publication", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $publications;
 

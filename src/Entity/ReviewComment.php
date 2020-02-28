@@ -20,7 +20,7 @@ class ReviewComment
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"user"})
+     * @Groups({"user", "review"})
      */
     private $comments;
 
@@ -32,13 +32,14 @@ class ReviewComment
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user"})
+     * @Groups({"user", "review"})
      */
     private $created_at;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="reviewComments")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"review"})
      */
     private $user_id;
 
@@ -63,9 +64,6 @@ class ReviewComment
         return $this;
     }
 
-    /**
-     * @Groups({"review_comment:read"})
-     */
     public function getReviewId(): ?Review
     {
         return $this->review_id;
@@ -78,9 +76,6 @@ class ReviewComment
         return $this;
     }
 
-    /**
-     * @Groups({"review_comment:read"})
-     */
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
