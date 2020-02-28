@@ -102,6 +102,11 @@ class User implements Userinterface
      */
     private $reviewComments;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Publication", mappedBy="user_id", orphanRemoval=true)
+     */
+    private $publications;
+
     public function __construct()
     {
         $this->roles = array('ROLE_USER');
@@ -113,6 +118,7 @@ class User implements Userinterface
         $this->likes = new ArrayCollection();
         $this->socialNetworks = new ArrayCollection();
         $this->reviewComments = new ArrayCollection();
+        $this->publications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -409,6 +415,37 @@ class User implements Userinterface
             // set the owning side to null (unless already changed)
             if ($reviewComment->getUserId() === $this) {
                 $reviewComment->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Publication[]
+     */
+    public function getPublications(): Collection
+    {
+        return $this->publications;
+    }
+
+    public function addPublication(Publication $publication): self
+    {
+        if (!$this->publications->contains($publication)) {
+            $this->publications[] = $publication;
+            $publication->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removePublication(Publication $publication): self
+    {
+        if ($this->publications->contains($publication)) {
+            $this->publications->removeElement($publication);
+            // set the owning side to null (unless already changed)
+            if ($publication->getUserId() === $this) {
+                $publication->setUserId(null);
             }
         }
 
