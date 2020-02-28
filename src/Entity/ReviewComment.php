@@ -20,7 +20,7 @@ class ReviewComment
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"user", "review"})
+     * @Groups({"user", "review", "comment"})
      */
     private $comments;
 
@@ -32,7 +32,7 @@ class ReviewComment
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "review"})
+     * @Groups({"user", "review", "comment"})
      */
     private $created_at;
 

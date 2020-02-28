@@ -14,34 +14,34 @@ class Comment
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review"})
+     * @Groups({"user", "proposal", "review", "comment"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"user", "proposal", "review"})
+     * @Groups({"user", "proposal", "review", "comment"})
      */
     private $content;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"user"})
+     * @Groups({"user", "comment"})
      */
     private $proposal_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"proposal", "review"})
+     * @Groups({"proposal", "review", "comment"})
      */
     private $user_id;
 
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"user"})
-     * @Groups({"user", "proposal", "review"})
+     * @Groups({"user", "proposal", "review", "comment"})
      */
     private $created_at;
 

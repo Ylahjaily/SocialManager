@@ -30,6 +30,7 @@ class CommentController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/comments/")
+     * @Rest\View(serializerGroups={"comment"})
      */
     public function getApiComments()
     {
@@ -39,6 +40,7 @@ class CommentController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/comments/{id}")
+     * @Rest\View(serializerGroups={"comment"})
      */
     public function getApiComment(Comment $comment)
     {
@@ -47,6 +49,7 @@ class CommentController extends AbstractFOSRestController
 
     /**
      * @Rest\Post("/api/comments/")
+     * @Rest\View(serializerGroups={"comment"})
      */
     public function postApiComment(Request $request, ProposalRepository $proposalRepository, UserRepository $userRepository, EntityManagerInterface $em)
     {
@@ -94,6 +97,7 @@ class CommentController extends AbstractFOSRestController
 
     /**
      * @Rest\Patch("api/comments/{id}")
+     * @Rest\View(serializerGroups={"comment"})
      */
     public function patchApiComment(Comment $comment, Request $request,EntityManagerInterface $em)
     {

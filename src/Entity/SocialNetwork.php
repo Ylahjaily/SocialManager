@@ -16,25 +16,25 @@ class SocialNetwork
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review"})
+     * @Groups({"user", "proposal", "review", "comment"})
      */
     private $id;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="socialNetworks")
-     * @Groups({"proposal", "review"})
+     * @Groups({"proposal", "review", "comment"})
      */
     private $user_id;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Proposal", inversedBy="socialNetworks")
-     * @Groups({"user", "review"})
+     * @Groups({"user", "review", "comment"})
      */
     private $proposals;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review"})
+     * @Groups({"user", "proposal", "review", "comment"})
      */
     private $name;
 
