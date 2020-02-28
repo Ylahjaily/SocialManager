@@ -3,14 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource(
- * normalizationContext={"groups"={"uploaded_document:read"}},
- * denormalizationContext={"groups"={"uploaded_document:write"}},
- * )
  * @ORM\Entity(repositoryClass="App\Repository\UploadedDocumentRepository")
  */
 class UploadedDocument
