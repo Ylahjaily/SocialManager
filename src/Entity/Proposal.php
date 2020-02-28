@@ -99,6 +99,11 @@ class Proposal
      */
     private $uploadedDocument;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Publication", mappedBy="proposal_id", orphanRemoval=true)
+     */
+    private $publications;
+
     public function __construct()
     {
         $this->created_at = new \DateTime('now');
@@ -108,6 +113,7 @@ class Proposal
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
         $this->socialNetworks = new ArrayCollection();
+        $this->publications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -347,6 +353,37 @@ class Proposal
         // set the owning side of the relation if necessary
         if ($uploadedDocument->getProposalId() !== $this) {
             $uploadedDocument->setProposalId($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Publication[]
+     */
+    public function getPublications(): Collection
+    {
+        return $this->publications;
+    }
+
+    public function addPublication(Publication $publication): self
+    {
+        if (!$this->publications->contains($publication)) {
+            $this->publications[] = $publication;
+            $publication->setProposalId($this);
+        }
+
+        return $this;
+    }
+
+    public function removePublication(Publication $publication): self
+    {
+        if ($this->publications->contains($publication)) {
+            $this->publications->removeElement($publication);
+            // set the owning side to null (unless already changed)
+            if ($publication->getProposalId() === $this) {
+                $publication->setProposalId(null);
+            }
         }
 
         return $this;
