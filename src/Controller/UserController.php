@@ -9,6 +9,8 @@ use App\Repository\UserRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Entity\Proposal;
 
 class UserController extends AbstractFOSRestController
 {
@@ -81,5 +83,21 @@ class UserController extends AbstractFOSRestController
         }
         $em->flush();
         return $this->view($user);
+    }
+
+    /**
+     * @Rest\Get("/api/users/proposals/{id}/reviewers")
+     */
+    public function getReviewersByProposal(Proposal $proposal)
+    {
+        if(!$proposal) {
+            throw new NotFoundHttpException('This proposal does not exist');
+        }
+        $reviewers=$this->userRepo->findReviewersByProposal($proposal);
+
+        if(!$reviewers) {
+            throw new NotFoundHttpException('Reviewers does not exist');
+        }
+        return $this->view($reviewers);
     }
 }

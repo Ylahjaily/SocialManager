@@ -47,4 +47,19 @@ class UserRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+     * @return User[] Returns an array of User objects
+     */
+    public function findReviewersByProposal($proposal)
+    {
+        return $this->createQueryBuilder('user')
+            ->innerJoin('user.reviews','reviews')
+            ->addSelect('reviews')
+            ->setParameter('proposal', $proposal)
+            ->where('reviews.proposal_id = :proposal')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }
