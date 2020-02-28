@@ -16,7 +16,7 @@ class Review
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $id;
 
@@ -35,13 +35,13 @@ class Review
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $is_approved;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $decision_at;
 
@@ -53,7 +53,7 @@ class Review
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $created_at;
 
@@ -68,9 +68,6 @@ class Review
         return $this->id;
     }
 
-    /**
-     * @Groups("review:read")
-     */
     public function getProposalId(): ?Proposal
     {
         return $this->proposal_id;
@@ -83,9 +80,6 @@ class Review
         return $this;
     }
 
-    /**
-     * @Groups("review:read")
-     */
     public function getUserId(): ?User
     {
         return $this->user_id;
@@ -98,9 +92,6 @@ class Review
         return $this;
     }
 
-    /**
-     * @Groups("review:read")
-     */
     public function getIsApproved(): ?bool
     {
         return $this->is_approved;
@@ -113,9 +104,6 @@ class Review
         return $this;
     }
 
-    /**
-     * @Groups("review:read")
-     */
     public function getDecisionAt(): ?\DateTimeInterface
     {
         return $this->decision_at;
@@ -159,9 +147,6 @@ class Review
         return $this;
     }
 
-    /**
-     * @Groups({"review:read"})
-     */
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;

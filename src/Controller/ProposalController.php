@@ -37,6 +37,7 @@ class ProposalController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/proposals")
+     * @Rest\View(serializerGroups={"proposal"})
      */
     public function getApiProposals()
     {
@@ -46,6 +47,7 @@ class ProposalController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/proposals/approved")
+     * @Rest\View(serializerGroups={"proposal"})
      */
     public function getApiApprovedProposals()
     {
@@ -55,6 +57,7 @@ class ProposalController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/proposals/unprocessed")
+     * @Rest\View(serializerGroups={"proposal"})
      */
     public function getApiUnProcessedProposals()
     {
@@ -64,6 +67,7 @@ class ProposalController extends AbstractFOSRestController
 
     /**
  * @Rest\Get("/api/reviewer/{id}/proposals")
+ * @Rest\View(serializerGroups={"proposal"})
  */
     public function getApiApprovedProposalsByReviewer(User $user)
     {
@@ -80,6 +84,7 @@ class ProposalController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/reviewer/{id}/proposals/rejected")
+     * @Rest\View(serializerGroups={"proposal"})
      */
     public function getApiRejectedProposalsByReviewer(User $user)
     {
@@ -96,6 +101,7 @@ class ProposalController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/member/{id}/proposals/rejected")
+     * @Rest\View(serializerGroups={"proposal"})
      */
     public function getApiRejectedProposalsByMember(User $user)
     {
@@ -112,6 +118,7 @@ class ProposalController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/proposals/{id}")
+     * @Rest\View(serializerGroups={"proposal"})
      */
     public function getApiProposalById(Proposal $proposal)
     {
@@ -120,6 +127,7 @@ class ProposalController extends AbstractFOSRestController
 
     /**
      * @Rest\Post("/api/proposals")
+     * @Rest\View(serializerGroups={"proposal"})
      */
     public function postApiProposal(Request $request, UserRepository $userRepository, EntityManagerInterface $em)
     {
@@ -169,6 +177,7 @@ class ProposalController extends AbstractFOSRestController
 
     /**
      * @Rest\Patch("api/proposals/{id}")
+     * @Rest\View(serializerGroups={"proposal"})
      */
     public function patchApiProposal(Proposal $proposal, Request $request,EntityManagerInterface $em)
     {

@@ -17,81 +17,86 @@ class Proposal
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $textContent;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     *@Groups({"user"})
+     *@Groups({"user", "proposal"})
      */
     private $link;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $is_published;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $date_publication_at;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="proposals")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"proposal"})
      */
     private $user_id;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Review", mappedBy="proposal_id", orphanRemoval=true)
+     * @Groups({"proposal"})
      */
     private $reviews;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="proposal_id", orphanRemoval=true)
+     * @Groups({"proposal"})
      */
     private $comments;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Like", mappedBy="proposal_id", orphanRemoval=true)
+     * @Groups({"proposal"})
      */
     private $likes;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\SocialNetwork", mappedBy="proposals")
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $socialNetworks;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\UploadedDocument", mappedBy="proposal_id", cascade={"persist", "remove"})
-     * @Groups({"user"})
+     * @Groups({"user", "proposal"})
      */
     private $uploadedDocument;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Publication", mappedBy="proposal_id", orphanRemoval=true)
+     * @Groups({"proposal"})
      */
     private $publications;
 
@@ -124,9 +129,6 @@ class Proposal
         return $this;
     }
 
-    /**
-     * @Groups({"user:read"})
-     */
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
@@ -163,9 +165,6 @@ class Proposal
         return $this;
     }
 
-    /**
-     * @Groups({"user:read"})
-     */
     public function getIsPublished(): ?bool
     {
         return $this->is_published;
@@ -178,9 +177,6 @@ class Proposal
         return $this;
     }
 
-    /**
-     * @Groups({"user:read"})
-     */
     public function getDatePublicationAt(): ?\DateTimeInterface
     {
         return $this->date_publication_at;
@@ -193,9 +189,6 @@ class Proposal
         return $this;
     }
 
-    /**
-     * @Groups({"user:read"})
-     */
     public function getUserId(): ?User
     {
         return $this->user_id;
@@ -329,9 +322,6 @@ class Proposal
         return $this;
     }
 
-    /**
-     * @Groups({"user:read"})
-     */
     public function getUploadedDocument(): ?UploadedDocument
     {
         return $this->uploadedDocument;
