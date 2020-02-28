@@ -16,44 +16,45 @@ class Review
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"user"})
+     * @Groups({"user", "review"})
      */
     private $proposal_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"review"})
      */
     private $user_id;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $is_approved;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $decision_at;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\ReviewComment", mappedBy="review_id", orphanRemoval=true)
-     * @Groups({"user"})
+     * @Groups({"user", "review"})
      */
     private $reviewComments;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal"})
+     * @Groups({"user", "proposal", "review"})
      */
     private $created_at;
 
