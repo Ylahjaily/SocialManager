@@ -5,14 +5,9 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource(
- * normalizationContext={"groups"={"social_network:read"}},
- * denormalizationContext={"groups"={"social_network:write"}},
- * )
  * @ORM\Entity(repositoryClass="App\Repository\SocialNetworkRepository")
  */
 class SocialNetwork
@@ -21,25 +16,24 @@ class SocialNetwork
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"social_network:read"})
+     * @Groups({"user"})
      */
     private $id;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="socialNetworks")
-     * @Groups({"social_network:read"})
      */
     private $user_id;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Proposal", inversedBy="socialNetworks")
-     * @Groups({"social_network:read"})
+     * @Groups({"user"})
      */
     private $proposals;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"social_network:read"})
+     * @Groups({"user"})
      */
     private $name;
 

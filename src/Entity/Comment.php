@@ -3,14 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource(
- * normalizationContext={"groups"={"comment:read"}},
- * denormalizationContext={"groups"={"comment:write"}},
- * )
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  */
 class Comment
@@ -19,20 +14,20 @@ class Comment
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"comment:read", "comment:write"})
+     * @Groups({"user"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"comment:read", "comment:write"})
+     * @Groups({"user"})
      */
     private $content;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"comment:read", "comment:write"})
+     * @Groups({"user"})
      */
     private $proposal_id;
 
@@ -44,6 +39,7 @@ class Comment
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"user"})
      */
     private $created_at;
 

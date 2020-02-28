@@ -6,14 +6,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
-use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource(
- * normalizationContext={"groups"={"user:read"}},
- * denormalizationContext={"groups"={"user:write"}},
- * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="`user`")
  */
@@ -23,82 +18,84 @@ class User implements Userinterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"proposal:read"})
+     * @Groups({"user"})
      */
     private $id;
 
     /**
-     * @Groups({"user:read", "user:write"})
      * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups({"user"})
      */
     private $email;
 
     /**
-     * @Groups({"user:read", "user:write"})
      * @ORM\Column(type="string", length=255)
+     * @Groups({"user"})
      */
     private $lastName;
 
     /**
-     * @Groups({"user:read", "user:write"})
      * @ORM\Column(type="string", length=255)
+     * @Groups({"user"})
      */
     private $firstName;
 
     /**
-     * @Groups({"user:read", "user:write"})
      * @ORM\Column(type="simple_array")
+     * @Groups({"user"})
      */
     private $roles = [];
 
     /**
-     * @Groups({"user:read", "user:write"})
      * @ORM\Column(type="datetime")
+     * @Groups({"user"})
      */
     private $created_at;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Proposal", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user:read"})
+     * @Groups({"user"})
      */
     private $proposals;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Review", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user:read"})
+     * @Groups({"user"})
      */
     private $reviews;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user:write"})
+     * @Groups({"user"})
      */
     private $apiKey;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="user_id", orphanRemoval=true)
+     * @Groups({"user"})
      */
     private $comments;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Like", mappedBy="user_id", orphanRemoval=true)
+     * @Groups({"user"})
      */
     private $likes;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\SocialNetwork", mappedBy="user_id")
-     * @Groups({"user:read"})
+     * @Groups({"user"})
      */
     private $socialNetworks;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:write"})
      */
     private $password;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\ReviewComment", mappedBy="user_id", orphanRemoval=true)
+     * @Groups({"user"})
      */
     private $reviewComments;
 
