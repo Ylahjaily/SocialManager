@@ -43,10 +43,16 @@ class SocialNetwork
      */
     private $name;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Publication", mappedBy="social_network_id", orphanRemoval=true)
+     */
+    private $publications;
+
     public function __construct()
     {
         $this->user_id = new ArrayCollection();
         $this->proposals = new ArrayCollection();
+        $this->publications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -116,6 +122,37 @@ class SocialNetwork
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Publication[]
+     */
+    public function getPublications(): Collection
+    {
+        return $this->publications;
+    }
+
+    public function addPublication(Publication $publication): self
+    {
+        if (!$this->publications->contains($publication)) {
+            $this->publications[] = $publication;
+            $publication->setSocialNetworkId($this);
+        }
+
+        return $this;
+    }
+
+    public function removePublication(Publication $publication): self
+    {
+        if ($this->publications->contains($publication)) {
+            $this->publications->removeElement($publication);
+            // set the owning side to null (unless already changed)
+            if ($publication->getSocialNetworkId() === $this) {
+                $publication->setSocialNetworkId(null);
+            }
+        }
 
         return $this;
     }
