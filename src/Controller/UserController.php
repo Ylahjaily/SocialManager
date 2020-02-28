@@ -29,6 +29,7 @@ class UserController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/users/{email}")
+     * @Rest\View(serializerGroups={"user"})
      */
     public function getApiUser(User $user)
     {
@@ -37,6 +38,7 @@ class UserController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/users")
+     * @Rest\View(serializerGroups={"user"})
      */
     public function getApiUsers()
     {
@@ -47,6 +49,7 @@ class UserController extends AbstractFOSRestController
     /**
      * @ParamConverter("user", converter="fos_rest.request_body")
      * @Rest\Post("api/users/")
+     * @Rest\View(serializerGroups={"user"})
      */
     public function postApiUser(User $user, EntityManagerInterface $em)
     {
@@ -70,6 +73,7 @@ class UserController extends AbstractFOSRestController
 
     /**
      * @Rest\Patch("api/users/{id}")
+     * @Rest\View(serializerGroups={"user"})
      */
     public function patchApiUser(User $user, Request $request,EntityManagerInterface $em)
     {

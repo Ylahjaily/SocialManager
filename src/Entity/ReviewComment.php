@@ -3,14 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource(
- * normalizationContext={"groups"={"review_comment:read"}},
- * denormalizationContext={"groups"={"review_comment:write"}},
- * )
  * @ORM\Entity(repositoryClass="App\Repository\ReviewCommentRepository")
  */
 class ReviewComment
@@ -19,26 +14,25 @@ class ReviewComment
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"review_comment:read"})
+     * @Groups({"user"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"review_comment:read", "review_comment:write"})
+     * @Groups({"user"})
      */
     private $comments;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Review", inversedBy="reviewComments")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"review_comment:read"})
      */
     private $review_id;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"review_comment:read"})
+     * @Groups({"user"})
      */
     private $created_at;
 

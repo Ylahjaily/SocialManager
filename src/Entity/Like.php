@@ -3,14 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource(
- * normalizationContext={"groups"={"like:read"}},
- * denormalizationContext={"groups"={"like:write"}},
- * )
  * @ORM\Entity(repositoryClass="App\Repository\LikeRepository")
  * @ORM\Table(name="`like`")
  */
@@ -20,21 +15,20 @@ class Like
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"like:read"})
+     * @Groups({"user"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="likes")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"like:read"})
+     * @Groups({"user"})
      */
     private $proposal_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="likes")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"like:read"})
      */
     private $user_id;
 
@@ -43,9 +37,6 @@ class Like
         return $this->id;
     }
 
-    /**
-     * @Groups({"like:read"})
-     */
     public function getProposalId(): ?Proposal
     {
         return $this->proposal_id;
@@ -58,9 +49,6 @@ class Like
         return $this;
     }
 
-    /**
-     * @Groups({"like:read"})
-     */
     public function getUserId(): ?User
     {
         return $this->user_id;

@@ -5,15 +5,10 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  *
- * @ApiResource(
- * normalizationContext={"groups"={"proposal:read"}},
- * denormalizationContext={"groups"={"proposal:write"}},
- * )
  * @ORM\Entity(repositoryClass="App\Repository\ProposalRepository")
  */
 class Proposal
@@ -22,80 +17,76 @@ class Proposal
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"proposal:read"})
+     * @Groups({"user"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"proposal:read"})
+     * @Groups({"user"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"proposal:read"})
+     * @Groups({"user"})
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"proposal:read"})
+     * @Groups({"user"})
      */
     private $textContent;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"proposal:read"})
+     *@Groups({"user"})
      */
     private $link;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"proposal:read"})
+     * @Groups({"user"})
      */
     private $is_published;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"proposal:read"})
+     * @Groups({"user"})
      */
     private $date_publication_at;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="proposals")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"proposal:read"})
      */
     private $user_id;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Review", mappedBy="proposal_id", orphanRemoval=true)
-     * @Groups({"proposal:read","review:read"})
      */
     private $reviews;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="proposal_id", orphanRemoval=true)
-     * @Groups({"proposal:read"})
      */
     private $comments;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Like", mappedBy="proposal_id", orphanRemoval=true)
-     * @Groups({"proposal:read"})
      */
     private $likes;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\SocialNetwork", mappedBy="proposals")
-     * @Groups({"proposal:read"})
+     * @Groups({"user"})
      */
     private $socialNetworks;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\UploadedDocument", mappedBy="proposal_id", cascade={"persist", "remove"})
-     * @Groups({"proposal:read"})
+     * @Groups({"user"})
      */
     private $uploadedDocument;
 
