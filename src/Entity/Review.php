@@ -16,7 +16,7 @@ class Review
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review", "comment"})
+     * @Groups({"user", "proposal", "review", "comment", "like"})
      */
     private $id;
 
@@ -36,25 +36,25 @@ class Review
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user", "proposal", "review", "comment"})
+     * @Groups({"user", "proposal", "review", "comment", "like"})
      */
     private $is_approved;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user", "proposal", "review", "comment"})
+     * @Groups({"user", "proposal", "review", "comment", "like"})
      */
     private $decision_at;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\ReviewComment", mappedBy="review_id", orphanRemoval=true)
-     * @Groups({"user", "review", "comment"})
+     * @Groups({"user", "review", "comment", "like"})
      */
     private $reviewComments;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal", "review", "comment"})
+     * @Groups({"user", "proposal", "review", "comment", "like"})
      */
     private $created_at;
 
