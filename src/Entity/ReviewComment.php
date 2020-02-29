@@ -14,33 +14,33 @@ class ReviewComment
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "like"})
+     * @Groups({"user", "like", "reviewComment"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"user", "review", "comment", "like"})
+     * @Groups({"user", "review", "comment", "like", "reviewComment"})
      */
     private $comments;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Review", inversedBy="reviewComments")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"like"})
+     * @Groups({"like", "reviewComment"})
      */
     private $review_id;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "review", "comment", "like"})
+     * @Groups({"user", "review", "comment", "like", "reviewComment"})
      */
     private $created_at;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="reviewComments")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"review", "like"})
+     * @Groups({"review", "like", "reviewComment"})
      */
     private $user_id;
 

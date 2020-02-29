@@ -16,33 +16,33 @@ class Review
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"user", "review"})
+     * @Groups({"user", "review", "reviewComment"})
      */
     private $proposal_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"review", "comment"})
+     * @Groups({"review", "comment", "reviewComment"})
      */
     private $user_id;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $is_approved;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $decision_at;
 
@@ -54,7 +54,7 @@ class Review
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $created_at;
 

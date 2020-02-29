@@ -18,43 +18,43 @@ class User implements Userinterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="simple_array")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $roles = [];
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $created_at;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Proposal", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user", "like"})
+     * @Groups({"user", "like", "reviewComment"})
      */
     private $proposals;
 
@@ -66,25 +66,25 @@ class User implements Userinterface
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $apiKey;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user", "like"})
+     * @Groups({"user", "like", "reviewComment"})
      */
     private $comments;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Like", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user", "comment"})
+     * @Groups({"user", "comment", "reviewComment"})
      */
     private $likes;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\SocialNetwork", mappedBy="user_id")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $socialNetworks;
 
@@ -101,7 +101,7 @@ class User implements Userinterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Publication", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $publications;
 

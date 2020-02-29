@@ -30,6 +30,7 @@ class ReviewCommentController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/review_comments/")
+     * @Rest\View(serializerGroups={"reviewComment"})
      */
     public function getApiReviewComments()
     {
@@ -39,6 +40,7 @@ class ReviewCommentController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/review_comments/{id}")
+     * @Rest\View(serializerGroups={"reviewComment"})
      */
     public function getApiReviewComment(ReviewComment $reviewComment)
     {
@@ -47,6 +49,7 @@ class ReviewCommentController extends AbstractFOSRestController
 
     /**
      * @Rest\Post("/api/review_comments/")
+     * @Rest\View(serializerGroups={"reviewComment"})
      */
     public function postApiReviewComment(Request $request, ReviewRepository $reviewRepository, UserRepository $userRepository, EntityManagerInterface $em)
     {
@@ -95,6 +98,7 @@ class ReviewCommentController extends AbstractFOSRestController
 
     /**
      * @Rest\Patch("api/review_comments/{id}")
+     * @Rest\View(serializerGroups={"reviewComment"})
      */
     public function patchApiReviewComment(ReviewComment $reviewComment, Request $request,EntityManagerInterface $em)
     {

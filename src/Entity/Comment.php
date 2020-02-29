@@ -14,13 +14,13 @@ class Comment
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $content;
 
@@ -41,7 +41,7 @@ class Comment
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"user"})
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $created_at;
 
