@@ -47,4 +47,19 @@ class CommentRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+     * @return Comment[] Returns an array of Comment objects
+     */
+    public function findCommentsByProposal($proposal)
+    {
+        return $this->createQueryBuilder('comment')
+            ->select('comment')
+            ->setParameter('proposal', $proposal)
+            ->where( 'comment.proposal_id = :proposal')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
 }

@@ -46,7 +46,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/proposals/approved")
+     * @Rest\Get("/api/communicant/proposals/approved")
      * @Rest\View(serializerGroups={"proposal"})
      */
     public function getApiApprovedProposals()
