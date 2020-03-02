@@ -10,6 +10,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
 use App\Repository\ReviewRepository;
+use App\Entity\Review;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ReviewCommentController extends AbstractFOSRestController
 {
@@ -48,7 +50,7 @@ class ReviewCommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/review_comments/")
+     * @Rest\Post("/api/profile/review/{review_id}/review_comments/")
      * @Rest\View(serializerGroups={"reviewComment"})
      */
     public function postApiReviewComment(Request $request, ReviewRepository $reviewRepository, UserRepository $userRepository, EntityManagerInterface $em)
@@ -110,6 +112,23 @@ class ReviewCommentController extends AbstractFOSRestController
         }
         $em->flush();
         return $this->view($reviewComment);
+    }
+
+    /**
+     * @Rest\Get("/api/review/{id}/review_comments")
+     * @Rest\View(serializerGroups={"reviewComment"})
+     */
+    public function getApiReviewCommentsByReview(Review $review)
+    {
+        if(!$review) {
+            throw new NotFoundHttpException('This review does not exist');
+        }
+        $review_comments=$this->reviewCommentRepo->findReviewCommentsByReview($review);
+
+        if(!$review_comments) {
+            throw new NotFoundHttpException('Review comments do not exist');
+        }
+        return $this->view($review_comments);
     }
 
 }

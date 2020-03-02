@@ -47,4 +47,18 @@ class ReviewCommentRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+     * @return ReviewComment[] Returns an array of ReviewComment objects
+     */
+    public function findReviewCommentsByReview($review)
+    {
+        return $this->createQueryBuilder('reviewComment')
+            ->select('reviewComment')
+            ->setParameter('review', $review)
+            ->where( 'reviewComment.review_id = :review')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }

@@ -30,7 +30,7 @@ class Review
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"review", "comment", "reviewComment"})
+     * @Groups({"review", "comment", "reviewComment", "proposal"})
      */
     private $user_id;
 

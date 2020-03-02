@@ -60,7 +60,7 @@ class User implements Userinterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Review", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user", "proposal", "like"})
+     * @Groups({"user","like"})
      */
     private $reviews;
 
