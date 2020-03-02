@@ -47,4 +47,17 @@ class LikeRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+     * @return Like[] Returns an array of Like objects
+     */
+    public function findLikesByProposal($proposal)
+    {
+        return $this->createQueryBuilder('l')
+            ->setParameter('proposal', $proposal)
+            ->where( 'l.proposal_id = :proposal')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }
