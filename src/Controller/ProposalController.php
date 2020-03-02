@@ -126,7 +126,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/proposals")
+     * @Rest\Post("/api/profile/proposals")
      * @Rest\View(serializerGroups={"proposal"})
      */
     public function postApiProposal(Request $request, UserRepository $userRepository, EntityManagerInterface $em)
