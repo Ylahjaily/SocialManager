@@ -74,7 +74,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Patch("api/users/{id}")
+     * @Rest\Patch("/api/admin/users/{id}")
      * @Rest\View(serializerGroups={"user"})
      */
     public function patchApiUser(User $user, Request $request,EntityManagerInterface $em)

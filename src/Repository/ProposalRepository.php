@@ -107,4 +107,19 @@ class ProposalRepository extends ServiceEntityRepository
             ;
     }
 
+    /**
+     * @return Proposal[] Returns an array of Proposal objects
+     */
+    public function findPublishedProposalsByUser($user)
+    {
+        return $this->createQueryBuilder('proposal')
+            ->select('proposal')
+            ->setParameter('user', $user)
+            ->where('proposal.is_published = true')
+            ->andWhere('proposal.user_id = :user')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
 }
