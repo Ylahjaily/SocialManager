@@ -22,7 +22,7 @@ class SocialNetwork
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="socialNetworks")
-     * @Groups({"proposal", "review", "comment", "like", "social"})
+     * @Groups({"proposal", "review", "comment", "social"})
      */
     private $user_id;
 
