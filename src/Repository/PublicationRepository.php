@@ -47,4 +47,18 @@ class PublicationRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+      * @return Publication[] Returns an array of Publication objects
+     */
+    public function findPublicationsByCommunicant($user)
+    {
+        return $this->createQueryBuilder('publication')
+            ->setParameter('user', $user)
+            ->where( 'publication.user_id = :user')
+            ->getQuery()
+            ->getResult()
+            ;
+        ;
+    }
 }

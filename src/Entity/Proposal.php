@@ -17,50 +17,50 @@ class Proposal
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
      */
     private $textContent;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     *@Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     *@Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
      */
     private $link;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
      */
     private $is_published;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
      */
     private $date_publication_at;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="proposals")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"proposal", "review", "comment", "social"})
+     * @Groups({"proposal", "review", "comment", "social", "publication"})
      */
     private $user_id;
 
