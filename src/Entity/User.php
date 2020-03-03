@@ -18,37 +18,37 @@ class User implements Userinterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="simple_array")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $roles = [];
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $created_at;
 
@@ -60,13 +60,13 @@ class User implements Userinterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Review", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user","like"})
+     * @Groups({"user","like", "social"})
      */
     private $reviews;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $apiKey;
 

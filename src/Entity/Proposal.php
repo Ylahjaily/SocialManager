@@ -17,50 +17,50 @@ class Proposal
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $textContent;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     *@Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     *@Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $link;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $is_published;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $date_publication_at;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="proposals")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"proposal", "review", "comment"})
+     * @Groups({"proposal", "review", "comment", "social"})
      */
     private $user_id;
 

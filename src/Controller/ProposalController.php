@@ -176,7 +176,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Patch("api/proposals/{id}")
+     * @Rest\Patch("api/reviewer/proposals/{id}")
      * @Rest\View(serializerGroups={"proposal"})
      */
     public function patchApiProposal(Proposal $proposal, Request $request,EntityManagerInterface $em)
