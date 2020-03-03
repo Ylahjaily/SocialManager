@@ -232,4 +232,21 @@ class ProposalController extends AbstractFOSRestController
         return $this->view($published_proposals);
     }
 
+    /**
+     * @Rest\Get("/api/profile/{id}/proposals/approved")
+     * @Rest\View(serializerGroups={"proposal"})
+     */
+    public function getApiApprovedProposalsByMember(User $user)
+    {
+        if(!$user) {
+            throw new NotFoundHttpException('This user does not exist');
+        }
+        $proposals=$this->proposalRepo->findApprovedProposalsByMember($user);
+
+        if(!$proposals) {
+            throw new NotFoundHttpException('There is no approved proposal');
+        }
+        return $this->view($proposals);
+    }
+
 }
