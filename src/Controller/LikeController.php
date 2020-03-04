@@ -22,6 +22,7 @@ class LikeController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/likes/")
+     * @Rest\View(serializerGroups={"like"})
      */
     public function getApiLikes()
     {
@@ -31,6 +32,7 @@ class LikeController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/likes/{id}")
+     * @Rest\View(serializerGroups={"like"})
      */
     public function getApiLike(Like $like)
     {
@@ -39,6 +41,7 @@ class LikeController extends AbstractFOSRestController
 
     /**
      * @Rest\Post("/api/likes/")
+     * @Rest\View(serializerGroups={"like"})
      */
     public function postApiLike(Request $request, ProposalRepository $proposalRepository, UserRepository $userRepository, EntityManagerInterface $em)
     {
