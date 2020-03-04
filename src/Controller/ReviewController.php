@@ -88,7 +88,7 @@ class ReviewController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Patch("api/reviews/{id}")
+     * @Rest\Patch("/api/reviewer/reviews/{id}")
      * @Rest\View(serializerGroups={"review"})
      */
     public function patchApiReview(Review $review, Request $request,EntityManagerInterface $em)
