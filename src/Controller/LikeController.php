@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
 use App\Repository\ProposalRepository;
 use App\Entity\Proposal;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LikeController extends AbstractFOSRestController
 {
@@ -41,7 +42,7 @@ class LikeController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/proposals/{id}/likes/")
+     * @Rest\Post("/api/profile/proposals/{id}/likes/")
      * @Rest\View(serializerGroups={"like"})
      */
     public function postApiLike(Request $request, Proposal $proposal, UserRepository $userRepository, EntityManagerInterface $em)
@@ -79,6 +80,23 @@ class LikeController extends AbstractFOSRestController
             return $this->view("La suppression a bien été effectuée");
         }
 
+    }
+
+    /**
+     * @Rest\Get("/api/profile/proposals/{id}/likes")
+     * @Rest\View(serializerGroups={"like"})
+     */
+    public function getApiLikesByProposal(Proposal $proposal)
+    {
+        if(!$proposal) {
+            throw new NotFoundHttpException('This proposal does not exist');
+        }
+        $likes=$this->likeRepo->findLikesByProposal($proposal);
+
+        if(!$likes) {
+            throw new NotFoundHttpException('There is no likes...');
+        }
+        return $this->view($likes);
     }
 
 }
