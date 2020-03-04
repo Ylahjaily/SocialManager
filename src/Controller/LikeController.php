@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
 use App\Repository\ProposalRepository;
+use App\Entity\Proposal;
 
 class LikeController extends AbstractFOSRestController
 {
@@ -40,19 +41,17 @@ class LikeController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/likes/")
+     * @Rest\Post("/api/proposals/{id}/likes/")
      * @Rest\View(serializerGroups={"like"})
      */
-    public function postApiLike(Request $request, ProposalRepository $proposalRepository, UserRepository $userRepository, EntityManagerInterface $em)
+    public function postApiLike(Request $request, Proposal $proposal, UserRepository $userRepository, EntityManagerInterface $em)
     {
         $like=new Like();
 
-        if(!is_null($request->get('proposal_id'))) {
-            $proposal = $proposalRepository->find($request->get('proposal_id'));
-            if(!is_null($proposal)) {
-                $like->setProposalId($proposal);
-            }
+        if(!$proposal) {
+            throw new NotFoundHttpException('This proposal does not exist');
         }
+        $like->setProposalId($proposal);
 
         if(!is_null($request->get('user_id'))) {
             $user = $userRepository->find($request->get('user_id'));
