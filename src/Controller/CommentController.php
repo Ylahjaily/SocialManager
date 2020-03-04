@@ -10,6 +10,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UserRepository;
 use App\Repository\ProposalRepository;
 use Symfony\Component\HttpFoundation\Request;
+use App\Entity\Proposal;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CommentController extends AbstractFOSRestController
 {
@@ -48,7 +50,7 @@ class CommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/comments/")
+     * @Rest\Post("/api/profile/proposals/{proposal_id}/comments/")
      * @Rest\View(serializerGroups={"comment"})
      */
     public function postApiComment(Request $request, ProposalRepository $proposalRepository, UserRepository $userRepository, EntityManagerInterface $em)
@@ -111,4 +113,20 @@ class CommentController extends AbstractFOSRestController
         return $this->view($comment);
     }
 
+    /**
+     * @Rest\Get("/api/profile/proposals/{id}/comments")
+     * @Rest\View(serializerGroups={"comment"})
+     */
+    public function getApiCommentsByProposal(Proposal $proposal)
+    {
+        if(!$proposal) {
+            throw new NotFoundHttpException('This proposal does not exist');
+        }
+        $comments=$this->commentRepo->findCommentsByProposal($proposal);
+
+        if(!$comments) {
+            throw new NotFoundHttpException('There is no comments...');
+        }
+        return $this->view($comments);
+    }
 }
