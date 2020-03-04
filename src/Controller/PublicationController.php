@@ -12,6 +12,7 @@ use App\Repository\UserRepository;
 use App\Repository\ProposalRepository;
 use App\Repository\SocialNetworkRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Entity\User;
 
 class PublicationController extends AbstractFOSRestController
 {
@@ -89,6 +90,23 @@ class PublicationController extends AbstractFOSRestController
             return $this->view("La suppression a bien été effectuée");
         }
 
+    }
+
+    /**
+     * @Rest\Get("/api/communicant/{id}/publications")
+     * @Rest\View(serializerGroups={"publication"})
+     */
+    public function getApiPublicationsByCommunciant(User $user)
+    {
+        if(!$user) {
+            throw new NotFoundHttpException('This communicant does not exist');
+        }
+        $publications=$this->publicationRepo->findPublicationsByCommunicant($user);
+
+        if(!$publications) {
+            throw new NotFoundHttpException('There is no publication by you...');
+        }
+        return $this->view($publications);
     }
 
 

@@ -2,11 +2,10 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
  * @ORM\Entity(repositoryClass="App\Repository\PublicationRepository")
  */
 class Publication
@@ -15,29 +14,34 @@ class Publication
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"publication"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="publications")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"publication"})
      */
     private $proposal_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="publications")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"publication"})
      */
     private $user_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\SocialNetwork", inversedBy="publications")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"publication"})
      */
     private $social_network_id;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"publication"})
      */
     private $created_at;
 
