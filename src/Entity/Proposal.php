@@ -84,7 +84,7 @@ class Proposal
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\SocialNetwork", mappedBy="proposals")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "reviewComment"})
      */
     private $socialNetworks;
 
