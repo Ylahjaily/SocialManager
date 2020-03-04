@@ -17,43 +17,43 @@ class Proposal
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $textContent;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     *@Groups({"user", "proposal", "review", "comment", "like"})
+     *@Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $link;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $is_published;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $date_publication_at;
 
@@ -72,31 +72,31 @@ class Proposal
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="proposal_id", orphanRemoval=true)
-     * @Groups({"proposal", "review", "like"})
+     * @Groups({"proposal", "review", "like", "reviewComment"})
      */
     private $comments;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Like", mappedBy="proposal_id", orphanRemoval=true)
-     * @Groups({"proposal", "review"})
+     * @Groups({"proposal", "review", "reviewComment"})
      */
     private $likes;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\SocialNetwork", mappedBy="proposals")
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $socialNetworks;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\UploadedDocument", mappedBy="proposal_id", cascade={"persist", "remove"})
-     * @Groups({"user", "proposal", "review", "comment", "like"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $uploadedDocument;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Publication", mappedBy="proposal_id", orphanRemoval=true)
-     * @Groups({"proposal", "review", "comment", "like"})
+     * @Groups({"proposal", "review", "comment", "like", "reviewComment"})
      */
     private $publications;
 
