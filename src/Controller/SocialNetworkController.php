@@ -30,6 +30,7 @@ class SocialNetworkController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/socials/")
+     * @Rest\View(serializerGroups={"social"})
      */
     public function getApiSocials()
     {
@@ -39,6 +40,7 @@ class SocialNetworkController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/socials/{id}")
+     * @Rest\View(serializerGroups={"social"})
      */
     public function getApiSocial(SocialNetwork $social)
     {
@@ -47,6 +49,7 @@ class SocialNetworkController extends AbstractFOSRestController
 
     /**
      * @Rest\Post("/api/socials/")
+     * @Rest\View(serializerGroups={"social"})
      */
     public function postApiSocial(Request $request, EntityManagerInterface $em)
     {
@@ -61,6 +64,7 @@ class SocialNetworkController extends AbstractFOSRestController
 
     /**
      * @Rest\Delete("api/socials/{id}")
+     * @Rest\View(serializerGroups={"social"})
      */
     public function deleteApiSocial(SocialNetwork $social, EntityManagerInterface $em)
     {
@@ -74,6 +78,7 @@ class SocialNetworkController extends AbstractFOSRestController
 
     /**
      * @Rest\Patch("api/socials/{id}")
+     * @Rest\View(serializerGroups={"social"})
      */
     public function patchApiSocial(SocialNetwork $social, Request $request,EntityManagerInterface $em)
     {

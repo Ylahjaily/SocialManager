@@ -15,21 +15,21 @@ class Like
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="likes")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"user"})
+     * @Groups({"user", "comment", "like"})
      */
     private $proposal_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="likes")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"proposal", "review"})
+     * @Groups({"proposal", "review", "like"})
      */
     private $user_id;
 

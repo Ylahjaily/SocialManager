@@ -94,4 +94,48 @@ class ProposalRepository extends ServiceEntityRepository
             ;
     }
 
+    /**
+     * @return Proposal[] Returns an array of Proposal objects
+     */
+    public function findPublishedProposals()
+    {
+        return $this->createQueryBuilder('proposal')
+            ->select('proposal')
+            ->where('proposal.is_published = true')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @return Proposal[] Returns an array of Proposal objects
+     */
+    public function findPublishedProposalsByUser($user)
+    {
+        return $this->createQueryBuilder('proposal')
+            ->select('proposal')
+            ->setParameter('user', $user)
+            ->where('proposal.is_published = true')
+            ->andWhere('proposal.user_id = :user')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @return Proposal[] Returns an array of Proposal objects
+     */
+    public function findApprovedProposalsByMember($user)
+    {
+        return $this->createQueryBuilder('proposal')
+            ->innerJoin('proposal.reviews','reviews')
+            ->addSelect('reviews')
+            ->setParameter('user', $user)
+            ->where('reviews.is_approved = true')
+            ->andWhere('proposal.user_id = :user')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
 }

@@ -16,45 +16,45 @@ class Review
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"user", "review"})
+     * @Groups({"user", "review", "reviewComment"})
      */
     private $proposal_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"review"})
+     * @Groups({"review", "comment", "reviewComment", "proposal"})
      */
     private $user_id;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user", "proposal", "review"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $is_approved;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user", "proposal", "review"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $decision_at;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\ReviewComment", mappedBy="review_id", orphanRemoval=true)
-     * @Groups({"user", "review"})
+     * @Groups({"user", "review", "comment", "like"})
      */
     private $reviewComments;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal", "review"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
      */
     private $created_at;
 

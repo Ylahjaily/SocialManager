@@ -46,7 +46,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/proposals/approved")
+     * @Rest\Get("/api/communicant/proposals/approved")
      * @Rest\View(serializerGroups={"proposal"})
      */
     public function getApiApprovedProposals()
@@ -126,7 +126,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/proposals")
+     * @Rest\Post("/api/profile/proposals")
      * @Rest\View(serializerGroups={"proposal"})
      */
     public function postApiProposal(Request $request, UserRepository $userRepository, EntityManagerInterface $em)
@@ -176,7 +176,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Patch("api/proposals/{id}")
+     * @Rest\Patch("api/reviewer/proposals/{id}")
      * @Rest\View(serializerGroups={"proposal"})
      */
     public function patchApiProposal(Proposal $proposal, Request $request,EntityManagerInterface $em)
@@ -197,6 +197,56 @@ class ProposalController extends AbstractFOSRestController
         }
         $em->flush();
         return $this->view($proposal);
+    }
+
+    /**
+     * @Rest\Get("/api/profile/proposals/published")
+     * @Rest\View(serializerGroups={"proposal"})
+     */
+    public function getApiPublishedProposals()
+    {
+        $published_proposals = $this->proposalRepo->findPublishedProposals();
+
+        if(!$published_proposals) {
+            throw new NotFoundHttpException('Ther is no published proposal');
+        }
+
+        return $this->view($published_proposals);
+    }
+
+    
+    /**
+     * @Rest\Get("/api/profile/{id}/published")
+     * @Rest\View(serializerGroups={"proposal"})
+     */
+    public function getApiPublishedProposalsByUser(User $user)
+    {
+        if(!$user) {
+            throw new NotFoundHttpException('This user does not exist');
+        }
+        $published_proposals=$this->proposalRepo->findPublishedProposalsByUser($user);
+
+        if(!$published_proposals) {
+            throw new NotFoundHttpException('There is no published proposal by you...');
+        }
+        return $this->view($published_proposals);
+    }
+
+    /**
+     * @Rest\Get("/api/profile/{id}/proposals/approved")
+     * @Rest\View(serializerGroups={"proposal"})
+     */
+    public function getApiApprovedProposalsByMember(User $user)
+    {
+        if(!$user) {
+            throw new NotFoundHttpException('This user does not exist');
+        }
+        $proposals=$this->proposalRepo->findApprovedProposalsByMember($user);
+
+        if(!$proposals) {
+            throw new NotFoundHttpException('There is no approved proposal');
+        }
+        return $this->view($proposals);
     }
 
 }
