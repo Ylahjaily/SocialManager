@@ -199,4 +199,19 @@ class ProposalController extends AbstractFOSRestController
         return $this->view($proposal);
     }
 
+    /**
+     * @Rest\Get("/api/profile/proposals/published")
+     * @Rest\View(serializerGroups={"proposal"})
+     */
+    public function getApiPublishedProposals()
+    {
+        $published_proposals = $this->proposalRepo->findPublishedProposals();
+
+        if(!$published_proposals) {
+            throw new NotFoundHttpException('Ther is no published proposal');
+        }
+
+        return $this->view($published_proposals);
+    }
+
 }
