@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -25,30 +26,50 @@ class User implements Userinterface
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Assert\NotBlank()
+     * @Assert\Email(
+     *  message = "The email '{{ value }}' is not a valid email."
+     * )
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     * min = 2,
+     * max = 50,
+     * minMessage = "Your last name must be at least {{ limit }} characters long",
+     * maxMessage = "Your last name cannot be longer than {{ limit }} characters"
+     * )
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     * min = 2,
+     * max = 50,
+     * minMessage = "Your first name must be at least {{ limit }} characters long",
+     * maxMessage = "Your first name cannot be longer than {{ limit }} characters"
+     * )
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="simple_array")
      * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Assert\NotBlank()
      */
     private $roles = [];
 
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Assert\NotBlank()
      */
     private $created_at;
 
@@ -67,6 +88,7 @@ class User implements Userinterface
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Assert\NotBlank()
      */
     private $apiKey;
 
@@ -90,6 +112,12 @@ class User implements Userinterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     * min = 6,
+     * max = 16,
+     * minMessage = "Your password must be at least {{ limit }} characters long",
+     * maxMessage = "Your password cannot be longer than {{ limit }} characters"
+     * )
      */
     private $password;
 
