@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UploadedDocumentRepository")
@@ -21,12 +22,20 @@ class UploadedDocument
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"uploaded_document:read", "uploaded_document:write"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     * min = 2,
+     * max = 30,
+     * minMessage = "Your document's name must be at least {{ limit }} characters long",
+     * maxMessage = "Your document's name cannot be longer than {{ limit }} characters"
+     * )
      */
     private $title;
 
     /**
      * @ORM\Column(type="blob")
      * @Groups({"uploaded_document:read", "uploaded_document:write"})
+     * @Assert\NotBlank()
      */
     private $data;
 

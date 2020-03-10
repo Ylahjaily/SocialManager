@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ReviewRepository")
@@ -55,6 +56,7 @@ class Review
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Assert\NotBlank()
      */
     private $created_at;
 

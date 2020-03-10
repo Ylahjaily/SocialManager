@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ReviewCommentRepository")
@@ -21,6 +22,7 @@ class ReviewComment
     /**
      * @ORM\Column(type="text")
      * @Groups({"user", "review", "comment", "like", "reviewComment"})
+     * @Assert\NotBlank()
      */
     private $comments;
 
@@ -34,6 +36,7 @@ class ReviewComment
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"user", "review", "comment", "like", "reviewComment"})
+     * @Assert\NotBlank()
      */
     private $created_at;
 
