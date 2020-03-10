@@ -98,6 +98,7 @@ class ReviewController extends AbstractFOSRestController
                 continue;
             }
             $review->$setter($request->get($attribute));
+            $review->setDecisionAt(new \DateTime('now'));
         }
         $em->flush();
         return $this->view($review);
