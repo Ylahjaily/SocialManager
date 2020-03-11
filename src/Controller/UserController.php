@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Entity\Proposal;
+use Swagger\Annotations as SWG;
 
 class UserController extends AbstractFOSRestController
 {
@@ -32,6 +33,21 @@ class UserController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/users/{email}")
      * @Rest\View(serializerGroups={"user"})
+     * @SWG\Parameter(
+     *  name = "email",
+     *  in = "path",
+     *  type = "string",
+     *  description="The email of the user",
+     *  required=true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "return one user"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "user not found"
+     * )
      */
     public function getApiUser(User $user)
     {
@@ -39,8 +55,12 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/users")
+     * @Rest\Get("/api/users/")
      * @Rest\View(serializerGroups={"user"})
+     * @SWG\Response(
+     *   response = 200,
+     *   description = "return list of users"
+     * )
      */
     public function getApiUsers()
     {
@@ -52,6 +72,77 @@ class UserController extends AbstractFOSRestController
      * @ParamConverter("user", converter="fos_rest.request_body")
      * @Rest\Post("api/users/")
      * @Rest\View(serializerGroups={"user"})
+     * @SWG\Parameter(
+     *  name = "email",
+     *  in = "body",
+     *  type = "string",
+     *  description = "the email of the new User",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "toto@gmail.com",
+     *      type = "string",
+     *      maxLength = 255
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "lastName",
+     *  in = "body",
+     *  type = "string",
+     *  description = "The last name of the User",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "toto",
+     *      type="string",
+     *      minLength = 2,
+     *      maxLength= 50
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "firstName",
+     *  in = "body",
+     *  type = "string",
+     *  description = "The first name of the User",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "toto",
+     *      type = "string",
+     *      minLength = 2,
+     *      maxLength = 50
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "apiKey",
+     *  in = "body",
+     *  type = "string",
+     *  description = "The apiKey of the User",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "xUh5Dcx",
+     *      type = "string",
+     *      maxLength = 255
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "password",
+     *  in = "body",
+     *  type = "string",
+     *  description = "The password of the User",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "frpgdsc15cd",
+     *      type = "string",
+     *      minLength = 6,
+     *      maxLength = 16
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 201,
+     *  description = "User created"
+     * )
+     * @SWG\Response(
+     *  response = 400,
+     *  description = "uncorrect request"
+     * )
      */
     public function postApiUser(User $user, EntityManagerInterface $em)
     {
@@ -61,7 +152,26 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Delete("api/users/{email}")
+     * @Rest\Delete("api/users/{id}")
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the user we want to delete",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 204,
+     *  description = "User deleted"
+     * )
+     * @SWG\Response(
+     *  response = 403,
+     *  description = "User not allowed"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "User not found"
+     * )
      */
     public function deleteApiUser(User $user, EntityManagerInterface $em)
     {
@@ -76,6 +186,91 @@ class UserController extends AbstractFOSRestController
     /**
      * @Rest\Patch("/api/admin/users/{id}")
      * @Rest\View(serializerGroups={"user"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the Id of the User",
+     *  required = true
+     * )
+     * @SWG\Parameter(
+     *  name = "lastName",
+     *  in = "body",
+     *  type = "string",
+     *  description = "The last name of the User",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "toto",
+     *      type="string",
+     *      minLength = 2,
+     *      maxLength= 50
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "firstName",
+     *  in = "body",
+     *  type = "string",
+     *  description = "The first name of the User",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "toto",
+     *      type = "string",
+     *      minLength = 2,
+     *      maxLength = 50
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "roles",
+     *  in = "body",
+     *  type = "simple_array",
+     *  description = "The role of the User",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "array(ROLE_USER)",
+     *      type = "simple_array"
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "apiKey",
+     *  in = "body",
+     *  type = "string",
+     *  description = "The apiKey of the User",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "xUh5Dcx",
+     *      type = "string",
+     *      maxLength = 255
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "password",
+     *  in = "body",
+     *  type = "string",
+     *  description = "The passwword of the User",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "frpgdsc15cd",
+     *      type = "string",
+     *      minLength = 6,
+     *      maxLength = 16
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "User updated"
+     * )
+     * @SWG\Response(
+     *  response = 400,
+     *  description = "Uncorrect request"
+     * )
+     * @SWG\Response(
+     *  response = 403,
+     *  description = "User doesn't have the permission"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "User doesn't exist"
+     * )
      */
     public function patchApiUser(User $user, Request $request,EntityManagerInterface $em)
     {
@@ -91,6 +286,21 @@ class UserController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/users/proposals/{id}/reviewers")
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the ID of the proposal",
+     *  required = true 
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "list of the reviewers by proposal"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Proposal not found"
+     * )
      */
     public function getReviewersByProposal(Proposal $proposal)
     {

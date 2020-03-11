@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
 use App\Repository\ProposalRepository;
+use Swagger\Annotations as SWG;
 
 class SocialNetworkController extends AbstractFOSRestController
 {
@@ -31,6 +32,10 @@ class SocialNetworkController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/socials/")
      * @Rest\View(serializerGroups={"social"})
+     * @SWG\Response(
+     *   response = 200,
+     *   description = "return list of social networks"
+     * )
      */
     public function getApiSocials()
     {
@@ -41,6 +46,21 @@ class SocialNetworkController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/socials/{id}")
      * @Rest\View(serializerGroups={"social"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description="The ID of the social network",
+     *  required=true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "return one social network"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "social network not found"
+     * )
      */
     public function getApiSocial(SocialNetwork $social)
     {
@@ -48,8 +68,27 @@ class SocialNetworkController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/socials/")
+     * @Rest\Post("/api/admin/socials/")
      * @Rest\View(serializerGroups={"social"})
+     * @SWG\Parameter(
+     *  name = "name",
+     *  in = "body",
+     *  type = "string",
+     *  description = "the name of the social network",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "Twitter",
+     *      type = "string"
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 201,
+     *  description = "Social Network created"
+     * )
+     * @SWG\Response(
+     *  response = 400,
+     *  description = "Uncorect request"
+     * )
      */
     public function postApiSocial(Request $request, EntityManagerInterface $em)
     {
@@ -65,6 +104,21 @@ class SocialNetworkController extends AbstractFOSRestController
     /**
      * @Rest\Delete("api/socials/{id}")
      * @Rest\View(serializerGroups={"social"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the Social Network we want to delete",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 204,
+     *  description = "Social Network deleted"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Social Network not found"
+     * )
      */
     public function deleteApiSocial(SocialNetwork $social, EntityManagerInterface $em)
     {
@@ -79,6 +133,36 @@ class SocialNetworkController extends AbstractFOSRestController
     /**
      * @Rest\Patch("api/socials/{id}")
      * @Rest\View(serializerGroups={"social"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the Id of the Social Network",
+     *  required = true
+     * )
+     * @SWG\Parameter(
+     *  name = "name",
+     *  in = "body",
+     *  type = "string",
+     *  description = "The name of the social network",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "twitter",
+     *      type="string"
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "Social Network updated"
+     * )
+     * @SWG\Response(
+     *  response = 403,
+     *  description = "User not allowed"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Social network doesn't exist"
+     * )
      */
     public function patchApiSocial(SocialNetwork $social, Request $request,EntityManagerInterface $em)
     {

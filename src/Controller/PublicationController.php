@@ -13,6 +13,8 @@ use App\Repository\ProposalRepository;
 use App\Repository\SocialNetworkRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Entity\User;
+use Swagger\Annotations as SWG;
+use App\Entity\SocialNetwork;
 
 class PublicationController extends AbstractFOSRestController
 {
@@ -26,6 +28,10 @@ class PublicationController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/publications/")
      * @Rest\View(serializerGroups={"publication"})
+     * @SWG\Response(
+     *   response = 200,
+     *   description = "return list of Publications"
+     * )
      */
     public function getApiPublications()
     {
@@ -36,6 +42,21 @@ class PublicationController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/publications/{id}")
      * @Rest\View(serializerGroups={"publication"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description="The ID of the publication",
+     *  required=true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "return one publication"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Publication not found"
+     * )
      */
     public function getApiPublication(Publication $publication)
     {
@@ -43,12 +64,54 @@ class PublicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/publications/")
+     * @Rest\Post("/api/social_network/{id}/publications/")
      * @Rest\View(serializerGroups={"publication"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the Social Network",
+     *  required = true
+     * )
+     * @SWG\Parameter(
+     *  name = "user_id",
+     *  in = "body",
+     *  type = "number",
+     *  description = "the ID of the User who publishes the proposal",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "5",
+     *      type = "number"
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "proposal_id",
+     *  in = "body",
+     *  type = "number",
+     *  description = "the ID of the proposal which will be published",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "2",
+     *      type = "number"
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 201,
+     *  description = "Publication created"
+     * )
+     * @SWG\Response(
+     *  response = 400,
+     *  description = "Uncorect request"
+     * )
      */
-    public function postApiPublication(Request $request, ProposalRepository $proposalRepository, UserRepository $userRepository, SocialNetworkRepository $socialRepository, EntityManagerInterface $em)
+    public function postApiPublication(Request $request, ProposalRepository $proposalRepository, UserRepository $userRepository, SocialNetwork $social, EntityManagerInterface $em)
     {
         $publication=new Publication();
+
+        if(!$social) {
+            throw new NotFoundHttpException('This social network does not exist');
+        }
+        $publication->setSocialNetworkId($social);
 
         if(!is_null($request->get('user_id'))) {
             $user = $userRepository->find($request->get('user_id'));
@@ -60,14 +123,7 @@ class PublicationController extends AbstractFOSRestController
         if(!is_null($request->get('proposal_id'))) {
             $proposal = $proposalRepository->find($request->get('proposal_id'));
             if(!is_null($proposal)) {
-                $publication->setProposalId($user);
-            }
-        }
-
-        if(!is_null($request->get('social_network_id'))) {
-            $social = $socialRepository->find($request->get('social_network_id'));
-            if(!is_null($social)) {
-                $publication->setSocialNetworkId($social);
+                $publication->setProposalId($proposal);
             }
         }
 
@@ -80,6 +136,25 @@ class PublicationController extends AbstractFOSRestController
 
     /**
      * @Rest\Delete("api/publications/{id}")
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the Publication we want to delete",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 204,
+     *  description = "Publication deleted"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Publication not found"
+     * )
+     * @SWG\Response(
+     *  response = 403,
+     *  description = "User not allowed"
+     * )
      */
     public function deleteApiPublication(Publication $publication, EntityManagerInterface $em)
     {
@@ -95,8 +170,27 @@ class PublicationController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/communicant/{id}/publications")
      * @Rest\View(serializerGroups={"publication"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the ID of the user",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "list of the published proposals by Communicant"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Communicant doesn't exist"
+     * )
+     * @SWG\Response(
+     *  response = 403,
+     *  description = "User not allowed"
+     * )
      */
-    public function getApiPublicationsByCommunciant(User $user)
+    public function getApiPublicationsByCommunicant(User $user)
     {
         if(!$user) {
             throw new NotFoundHttpException('This communicant does not exist');
