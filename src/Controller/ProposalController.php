@@ -11,6 +11,7 @@ use App\Repository\ProposalRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
+use Swagger\Annotations as SWG;
 
 class ProposalController extends AbstractFOSRestController
 {
@@ -38,6 +39,10 @@ class ProposalController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/proposals")
      * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Response(
+     *   response = 200,
+     *   description = "return list of proposals"
+     * )
      */
     public function getApiProposals()
     {
@@ -48,6 +53,10 @@ class ProposalController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/communicant/proposals/approved")
      * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Response(
+     *   response = 200,
+     *   description = "return list of proposals which have been approved"
+     * )
      */
     public function getApiApprovedProposals()
     {
@@ -58,6 +67,10 @@ class ProposalController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/proposals/unprocessed")
      * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Response(
+     *   response = 200,
+     *   description = "return list of proposals which havent been treated"
+     * )
      */
     public function getApiUnProcessedProposals()
     {
@@ -66,9 +79,24 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
- * @Rest\Get("/api/reviewer/{id}/proposals")
- * @Rest\View(serializerGroups={"proposal"})
- */
+     * @Rest\Get("/api/reviewer/{id}/proposals")
+     * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the ID of the reviewer",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "list of the approved proposals by reviewer"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "User doesn't exist"
+     * )
+     */
     public function getApiApprovedProposalsByReviewer(User $user)
     {
         if(!$user) {
@@ -85,6 +113,21 @@ class ProposalController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/reviewer/{id}/proposals/rejected")
      * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the ID of the reviewer",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "list of the rejected proposals by reviewer"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "User doesn't exist"
+     * )
      */
     public function getApiRejectedProposalsByReviewer(User $user)
     {
@@ -102,6 +145,21 @@ class ProposalController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/member/{id}/proposals/rejected")
      * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the ID of the member",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "list of the rejected proposals by member"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "User doesn't exist"
+     * )
      */
     public function getApiRejectedProposalsByMember(User $user)
     {
@@ -119,6 +177,21 @@ class ProposalController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/proposals/{id}")
      * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description="The ID of the proposal",
+     *  required=true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "return one proposal"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "proposal not found"
+     * )
      */
     public function getApiProposalById(Proposal $proposal)
     {
@@ -126,12 +199,54 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/profile/proposals")
+     * @Rest\Post("/api/profile/{id}/proposals")
      * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the User",
+     *  required = true
+     * )
+     * @SWG\Parameter(
+     *  name = "title",
+     *  in = "body",
+     *  type = "string",
+     *  description = "the title of the new Proposal",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "title -xxx",
+     *      type = "text"
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "textContent",
+     *  in = "body",
+     *  type = "string",
+     *  description = "the text content of the proposal",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "text content -002",
+     *      type = "text"
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 201,
+     *  description = "Proposal created"
+     * )
+     * @SWG\Response(
+     *  response = 400,
+     *  description = "Uncorect request"
+     * )
      */
-    public function postApiProposal(Request $request, UserRepository $userRepository, EntityManagerInterface $em)
+    public function postApiProposal(Request $request, User $user, EntityManagerInterface $em)
     {
         $proposal=new Proposal();
+
+        if(!$user) {
+            throw new NotFoundHttpException('This user does not exist');
+        }
+        $proposal->setUserId($user);
 
         foreach(static::$postProposalRequiredAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
@@ -148,13 +263,6 @@ class ProposalController extends AbstractFOSRestController
             }
         }
 
-        if(!is_null($request->get('user_id'))) {
-            $user = $userRepository->find($request->get('user_id'));
-            if(!is_null($user)) {
-                $proposal->setUserId($user);
-            }
-        }
-
         $em->persist($proposal);
         $em->flush();
 
@@ -164,6 +272,25 @@ class ProposalController extends AbstractFOSRestController
 
     /**
      * @Rest\Delete("api/proposals/{id}")
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the proposal we want to delete",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 204,
+     *  description = "Proposal deleted"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Proposal not found"
+     * )
+     * @SWG\Response(
+     *  response = 403,
+     *  description = "User not allowed"
+     * )
      */
     public function deleteApiProposal(Proposal $proposal, EntityManagerInterface $em)
     {
@@ -178,6 +305,47 @@ class ProposalController extends AbstractFOSRestController
     /**
      * @Rest\Patch("api/reviewer/proposals/{id}")
      * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the Id of the Proposal",
+     *  required = true
+     * )
+     * @SWG\Parameter(
+     *  name = "title",
+     *  in = "body",
+     *  type = "string",
+     *  description = "The title of the Proposal",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "title -xxx",
+     *      type="string"
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "textContent",
+     *  in = "body",
+     *  type = "text",
+     *  description = "The content of the Proposal",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "Content -xxx",
+     *      type="text"
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "Proposal updated"
+     * )
+     * @SWG\Response(
+     *  response = 403,
+     *  description = "User not allowed"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Proposal doesn't exist"
+     * )
      */
     public function patchApiProposal(Proposal $proposal, Request $request,EntityManagerInterface $em)
     {
@@ -202,6 +370,10 @@ class ProposalController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/profile/proposals/published")
      * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Response(
+     *   response = 200,
+     *   description = "return list of proposals which have been published on social networks"
+     * )
      */
     public function getApiPublishedProposals()
     {
@@ -218,6 +390,21 @@ class ProposalController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/profile/{id}/published")
      * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the ID of the user",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "list of the published proposals by User"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "User doesn't exist"
+     * )
      */
     public function getApiPublishedProposalsByUser(User $user)
     {
@@ -235,6 +422,21 @@ class ProposalController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/profile/{id}/proposals/approved")
      * @Rest\View(serializerGroups={"proposal"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the ID of the user",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "list of the approved proposals by User"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "User doesn't exist"
+     * )
      */
     public function getApiApprovedProposalsByMember(User $user)
     {

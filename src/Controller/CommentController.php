@@ -12,6 +12,7 @@ use App\Repository\ProposalRepository;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Proposal;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Swagger\Annotations as SWG;
 
 class CommentController extends AbstractFOSRestController
 {
@@ -33,6 +34,10 @@ class CommentController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/comments/")
      * @Rest\View(serializerGroups={"comment"})
+     * @SWG\Response(
+     *   response = 200,
+     *   description = "return list of comments"
+     * )
      */
     public function getApiComments()
     {
@@ -43,6 +48,21 @@ class CommentController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/comments/{id}")
      * @Rest\View(serializerGroups={"comment"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description="The ID of the comment",
+     *  required=true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "return one comment"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "comment not found"
+     * )
      */
     public function getApiComment(Comment $comment)
     {
@@ -50,25 +70,60 @@ class CommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/profile/proposals/{proposal_id}/comments/")
+     * @Rest\Post("/api/profile/proposals/{id}/comments/")
      * @Rest\View(serializerGroups={"comment"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the Proposal",
+     *  required = true
+     * )
+     * @SWG\Parameter(
+     *  name = "content",
+     *  in = "body",
+     *  type = "text",
+     *  description = "the content of the new Comment",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "content -xxx",
+     *      type = "text"
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "user_id",
+     *  in = "body",
+     *  type = "number",
+     *  description = "the ID of the User who adds a comment",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "2",
+     *      type = "number"
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 201,
+     *  description = "Comment created"
+     * )
+     * @SWG\Response(
+     *  response = 400,
+     *  description = "Uncorect request"
+     * )
      */
-    public function postApiComment(Request $request, ProposalRepository $proposalRepository, UserRepository $userRepository, EntityManagerInterface $em)
+    public function postApiComment(Request $request, Proposal $proposal, UserRepository $userRepository, EntityManagerInterface $em)
     {
         $comment=new Comment();
+
+        if(!$proposal) {
+            throw new NotFoundHttpException('This proposal does not exist');
+        }
+        $comment->setProposalId($proposal);
 
         foreach(static::$postCommentRequiredAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
                 continue;
             }
             $comment->$setter($request->get($attribute));
-        }
-
-        if(!is_null($request->get('proposal_id'))) {
-            $proposal = $proposalRepository->find($request->get('proposal_id'));
-            if(!is_null($proposal)) {
-                $comment->setProposalId($proposal);
-            }
         }
 
         if(!is_null($request->get('user_id'))) {
@@ -86,6 +141,25 @@ class CommentController extends AbstractFOSRestController
 
     /**
      * @Rest\Delete("api/comments/{id}")
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the comment we want to delete",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 204,
+     *  description = "Comment deleted"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Comment not found"
+     * )
+     * @SWG\Response(
+     *  response = 403,
+     *  description = "User not allowed"
+     * )
      */
     public function deleteApiComment(Comment $comment, EntityManagerInterface $em)
     {
@@ -100,6 +174,36 @@ class CommentController extends AbstractFOSRestController
     /**
      * @Rest\Patch("api/comments/{id}")
      * @Rest\View(serializerGroups={"comment"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the Id of the Comment",
+     *  required = true
+     * )
+     * @SWG\Parameter(
+     *  name = "content",
+     *  in = "body",
+     *  type = "text",
+     *  description = "The content of the comment",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "content -xxx",
+     *      type="text"
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "comment updated"
+     * )
+     * @SWG\Response(
+     *  response = 403,
+     *  description = "User not allowed"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Comment doesn't exist"
+     * )
      */
     public function patchApiComment(Comment $comment, Request $request,EntityManagerInterface $em)
     {
@@ -116,6 +220,21 @@ class CommentController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/profile/proposals/{id}/comments")
      * @Rest\View(serializerGroups={"comment"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the ID of the proposal",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "list of the comments by proposal"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Proposal doesn't exist"
+     * )
      */
     public function getApiCommentsByProposal(Proposal $proposal)
     {

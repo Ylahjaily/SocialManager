@@ -9,6 +9,8 @@ use App\Repository\UploadedDocumentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\ProposalRepository;
+use Swagger\Annotations as SWG;
+use App\Entity\Proposal;
 
 class UploadedDocumentController extends AbstractFOSRestController
 {
@@ -30,6 +32,10 @@ class UploadedDocumentController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/up_docs/")
+     * @SWG\Response(
+     *   response = 200,
+     *   description = "return list of documents"
+     * )
      */
     public function getApiUploadedDocuments()
     {
@@ -39,6 +45,21 @@ class UploadedDocumentController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/up_docs/{id}")
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description="The ID of the document",
+     *  required=true
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "return one document"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "document not found"
+     * )
      */
     public function getApiUploadedDocument(UploadedDocument $uploadedDocument)
     {
@@ -46,11 +67,53 @@ class UploadedDocumentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/up_docs/")
+     * @Rest\Post("/api/proposals/{id}/up_docs/")
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the proposal",
+     *  required = true
+     * )
+     * @SWG\Parameter(
+     *  name = "title",
+     *  in = "body",
+     *  type = "string",
+     *  description = "the title of the document which will be added to the proposal",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "document 1",
+     *      type = "string"
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "data",
+     *  in = "body",
+     *  type = "file",
+     *  description = "the file of the document which will be added to the proposal",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "document.pdf",
+     *      type = "file"
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 201,
+     *  description = "Document added"
+     * )
+     * @SWG\Response(
+     *  response = 400,
+     *  description = "Uncorect request"
+     * )
      */
-    public function postApiUploadedDocument(Request $request, ProposalRepository $proposalRepo, EntityManagerInterface $em)
+    public function postApiUploadedDocument(Request $request, Proposal $proposal, EntityManagerInterface $em)
     {
         $uploadedDocument=new UploadedDocument();
+
+        if(!$proposal) {
+            throw new NotFoundHttpException('This proposal does not exist');
+        }
+        $uploadedDocument->setProposalId($proposal);
 
         foreach(static::$postUploadedDocumentRequiredAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
@@ -59,12 +122,6 @@ class UploadedDocumentController extends AbstractFOSRestController
             $uploadedDocument->$setter($request->get($attribute));
         }
 
-        if(!is_null($request->get('proposal_id'))) {
-            $proposal = $proposalRepository->find($request->get('proposal_id'));
-            if(!is_null($proposal)) {
-                $uploadedDocument->setProposalId($proposal);
-            }
-        }
 
         $em->persist($uploadedDocument);
         $em->flush();
@@ -75,6 +132,25 @@ class UploadedDocumentController extends AbstractFOSRestController
 
     /**
      * @Rest\Delete("api/up_docs/{id}")
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the document we want to delete",
+     *  required = true
+     * )
+     * @SWG\Response(
+     *  response = 204,
+     *  description = "Document deleted"
+     * )
+     * @SWG\Response(
+     *  response = 403,
+     *  description = "User not allowed"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Document not found"
+     * )
      */
     public function deleteApiUploadedDocument(UploadedDocument $uploadedDocument, EntityManagerInterface $em)
     {
@@ -88,6 +164,36 @@ class UploadedDocumentController extends AbstractFOSRestController
 
     /**
      * @Rest\Patch("api/up_docs/{id}")
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the Id of the document",
+     *  required = true
+     * )
+     * @SWG\Parameter(
+     *  name = "title",
+     *  in = "body",
+     *  type = "string",
+     *  description = "The title of the doc",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "title -001",
+     *      type="string"
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 200,
+     *  description = "Document updated"
+     * )
+     * @SWG\Response(
+     *  response = 403,
+     *  description = "User not allowed"
+     * )
+     * @SWG\Response(
+     *  response = 404,
+     *  description = "Document doesn't exist"
+     * )
      */
     public function patchApiUploadedDocument(UploadedDocument $uploadedDocument, Request $request,EntityManagerInterface $em)
     {
