@@ -70,7 +70,7 @@ class Proposal
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="proposals")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"proposal", "review", "comment", "social", "publication"})
+     * @Groups({"proposal", "review", "comment", "social"})
      */
     private $user_id;
 
@@ -98,11 +98,6 @@ class Proposal
      */
     private $socialNetworks;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\UploadedDocument", mappedBy="proposal_id", cascade={"persist", "remove"})
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
-     */
-    private $uploadedDocument;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Publication", mappedBy="proposal_id", orphanRemoval=true)
@@ -327,23 +322,6 @@ class Proposal
         if ($this->socialNetworks->contains($socialNetwork)) {
             $this->socialNetworks->removeElement($socialNetwork);
             $socialNetwork->removeProposal($this);
-        }
-
-        return $this;
-    }
-
-    public function getUploadedDocument(): ?UploadedDocument
-    {
-        return $this->uploadedDocument;
-    }
-
-    public function setUploadedDocument(UploadedDocument $uploadedDocument): self
-    {
-        $this->uploadedDocument = $uploadedDocument;
-
-        // set the owning side of the relation if necessary
-        if ($uploadedDocument->getProposalId() !== $this) {
-            $uploadedDocument->setProposalId($this);
         }
 
         return $this;
