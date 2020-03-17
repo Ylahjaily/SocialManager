@@ -106,7 +106,7 @@ class User implements Userinterface
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\SocialNetwork", mappedBy="user_id")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "review", "comment", "like", "reviewComment"})
      */
     private $socialNetworks;
 
@@ -129,7 +129,7 @@ class User implements Userinterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Publication", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "review", "comment", "like", "reviewComment"})
      */
     private $publications;
 
