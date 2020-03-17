@@ -7,6 +7,8 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\UserRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -16,7 +18,7 @@ use Swagger\Annotations as SWG;
 class UserController extends AbstractFOSRestController
 {
     private $userRepo;
-    
+
     static private $patchUserModifiableAttributes = [
         'lastName' => 'setLastName',
         'firstName' => 'setFirstName',
@@ -62,10 +64,22 @@ class UserController extends AbstractFOSRestController
      *   description = "return list of users"
      * )
      */
-    public function getApiUsers()
+    public function getApiUsers(SerializerInterface $serializer)
     {
-        $users = $this->userRepo->findAll();
-        return $this->view($users);
+          $users = $this->userRepo->findAll();
+
+         $json = $serializer->serialize(
+            $users,
+            'json', ['groups' => 'user']
+         );
+
+                $response = new Response();
+                        $response->headers->set('Content-Type', 'application/json');
+                        $response->headers->set('Access-Control-Allow-Origin', '*');
+                        $response->setStatusCode(200);
+                        $response->setContent($json);
+                        return $response;
+
     }
 
     /**
@@ -291,7 +305,7 @@ class UserController extends AbstractFOSRestController
      *  in = "path",
      *  type = "number",
      *  description = "the ID of the proposal",
-     *  required = true 
+     *  required = true
      * )
      * @SWG\Response(
      *  response = 200,
