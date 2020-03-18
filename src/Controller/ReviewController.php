@@ -13,19 +13,20 @@ use App\Repository\UserRepository;
 use App\Repository\ProposalRepository;
 use Swagger\Annotations as SWG;
 use App\Entity\Proposal;
+use App\Entity\UploadedDocument;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+
 class ReviewController extends AbstractFOSRestController
 {
     private $reviewRepo;
 
     static private $patchReviewModifiableAttributes = [
-        'is_approved' => 'setIsApproved',
-        'decision_at' => 'setDecisionAt',
+        'is_approved' => 'setIsApproved'
     ];
 
     public function __construct(ReviewRepository $reviewRepo)
@@ -127,7 +128,10 @@ class ReviewController extends AbstractFOSRestController
      *  description = "Uncorect request"
      * )
      */
-    public function postApiReview(Request $request, Proposal $proposal, UserRepository $userRepository,SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator)
+
+    public function postApiProposalReview(Request $request, Proposal $proposal, UserRepository $userRepository, EntityManagerInterface $em)
+
+  
     {
         $review=new Review();
         $review->setIsApproved(false);
@@ -171,6 +175,60 @@ class ReviewController extends AbstractFOSRestController
         $response->setContent($json);
         $response->setStatusCode(201);
         return $response;
+    }
+
+    /**
+     * @Rest\Post("/api/up_docs/{id}/reviews/")
+     * @Rest\View(serializerGroups={"review"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the uploaded document",
+     *  required = true
+     * )
+     * @SWG\Parameter(
+     *  name = "user_id",
+     *  in = "body",
+     *  type = "number",
+     *  description = "the ID of the User who adds a review",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "2",
+     *      type = "number"
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 201,
+     *  description = "Review created"
+     * )
+     * @SWG\Response(
+     *  response = 400,
+     *  description = "Uncorect request"
+     * )
+     */
+    public function postApiFileReview(Request $request, UploadedDocument $uploadedDoc, UserRepository $userRepository, EntityManagerInterface $em)
+    {
+        $review=new Review();
+        $review->setIsApproved(false);
+
+        if(!$uploadedDoc) {
+            throw new NotFoundHttpException('This uploaded document does not exist');
+        }
+        $review->setUploadedDocumentId($uploadedDoc);
+
+        if(!is_null($request->get('user_id'))) {
+            $user = $userRepository->find($request->get('user_id'));
+            if(!is_null($user)) {
+                $review->setUserId($user);
+            }
+        }
+
+        $em->persist($review);
+        $em->flush();
+
+        return $this->view($review);
+
     }
 
     /**

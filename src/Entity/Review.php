@@ -17,13 +17,13 @@ class Review
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "uploadedDoc"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="reviews")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      * @Groups({"user", "review", "reviewComment"})
      */
     private $proposal_id;
@@ -37,28 +37,34 @@ class Review
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "uploadedDoc"})
      */
     private $is_approved;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "uploadedDoc"})
      */
     private $decision_at;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\ReviewComment", mappedBy="review_id", orphanRemoval=true)
-     * @Groups({"user", "review", "comment", "like"})
+     * @Groups({"user", "review", "comment", "like", "uploadedDoc"})
      */
     private $reviewComments;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "uploadedDoc"})
      * @Assert\NotBlank()
      */
     private $created_at;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\UploadedDocument", inversedBy="reviews")
+     * @Groups({"review"})
+     */
+    private $uploaded_document_id;
 
     public function __construct()
     {
@@ -158,6 +164,18 @@ class Review
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUploadedDocumentId(): ?UploadedDocument
+    {
+        return $this->uploaded_document_id;
+    }
+
+    public function setUploadedDocumentId(?UploadedDocument $uploaded_document_id): self
+    {
+        $this->uploaded_document_id = $uploaded_document_id;
 
         return $this;
     }

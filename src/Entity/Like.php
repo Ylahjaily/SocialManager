@@ -21,7 +21,7 @@ class Like
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="likes")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      * @Groups({"user", "comment", "like"})
      */
     private $proposal_id;
@@ -32,6 +32,11 @@ class Like
      * @Groups({"proposal", "review", "like"})
      */
     private $user_id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\UploadedDocument", inversedBy="likes")
+     */
+    private $uploaded_document_id;
 
     public function getId(): ?int
     {
@@ -58,6 +63,18 @@ class Like
     public function setUserId(?User $user_id): self
     {
         $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getUploadedDocumentId(): ?UploadedDocument
+    {
+        return $this->uploaded_document_id;
+    }
+
+    public function setUploadedDocumentId(?UploadedDocument $uploaded_document_id): self
+    {
+        $this->uploaded_document_id = $uploaded_document_id;
 
         return $this;
     }

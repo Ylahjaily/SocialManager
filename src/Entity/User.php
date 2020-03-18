@@ -19,13 +19,13 @@ class User implements Userinterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "uploadedDoc"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "uploadedDoc"})
      * @Assert\NotBlank()
      * @Assert\Email(
      *  message = "The email '{{ value }}' is not a valid email."
@@ -35,7 +35,7 @@ class User implements Userinterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "uploadedDoc"})
      * @Assert\NotBlank()
      * @Assert\Length(
      * min = 2,
@@ -48,7 +48,7 @@ class User implements Userinterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "uploadedDoc"})
      * @Assert\NotBlank()
      * @Assert\Length(
      * min = 2,
@@ -61,21 +61,21 @@ class User implements Userinterface
 
     /**
      * @ORM\Column(type="simple_array")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "uploadedDoc"})
      * @Assert\NotBlank()
      */
     private $roles = [];
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "uploadedDoc"})
      * @Assert\NotBlank()
      */
     private $created_at;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Proposal", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user", "like", "reviewComment"})
+     * @Groups({"user", "like", "reviewComment", "uploadedDoc"})
      */
     private $proposals;
 
@@ -133,6 +133,11 @@ class User implements Userinterface
      */
     private $publications;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\UploadedDocument", mappedBy="user_id", orphanRemoval=true)
+     */
+    private $uploadedDocuments;
+
     public function __construct()
     {
         $this->roles = array('ROLE_USER');
@@ -145,6 +150,7 @@ class User implements Userinterface
         $this->socialNetworks = new ArrayCollection();
         $this->reviewComments = new ArrayCollection();
         $this->publications = new ArrayCollection();
+        $this->uploadedDocuments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -472,6 +478,37 @@ class User implements Userinterface
             // set the owning side to null (unless already changed)
             if ($publication->getUserId() === $this) {
                 $publication->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|UploadedDocument[]
+     */
+    public function getUploadedDocuments(): Collection
+    {
+        return $this->uploadedDocuments;
+    }
+
+    public function addUploadedDocument(UploadedDocument $uploadedDocument): self
+    {
+        if (!$this->uploadedDocuments->contains($uploadedDocument)) {
+            $this->uploadedDocuments[] = $uploadedDocument;
+            $uploadedDocument->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUploadedDocument(UploadedDocument $uploadedDocument): self
+    {
+        if ($this->uploadedDocuments->contains($uploadedDocument)) {
+            $this->uploadedDocuments->removeElement($uploadedDocument);
+            // set the owning side to null (unless already changed)
+            if ($uploadedDocument->getUserId() === $this) {
+                $uploadedDocument->setUserId(null);
             }
         }
 

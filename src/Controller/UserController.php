@@ -8,6 +8,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\UserRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,6 +35,7 @@ class UserController extends AbstractFOSRestController
     {
         $this->userRepo=$userRepo;
     }
+
 
     /**
      * @Rest\Get("/api/users/{email}")
@@ -73,9 +75,9 @@ class UserController extends AbstractFOSRestController
         return $response;
     }
 
+
     /**
      * @Rest\Get("/api/users/")
-     * @Rest\View(serializerGroups={"user"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of users"
