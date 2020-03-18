@@ -229,14 +229,16 @@ class PublicationController extends AbstractFOSRestController
 
         $med = $uploadedDoc->getDataPath();
         $title = $uploadedDoc->getTitle();
-
+        
         $media = $connection->upload('media/upload', [
-            'media' => $med
+            'media' => '../public/'.$med
             ]);
         $parameters = [
             'status' => $title,
             'media_ids' => $media->media_id_string
             ];
+        
+
         $result = $connection->post('statuses/update', $parameters);
         $em->persist($social);
         $em->persist($publication);
