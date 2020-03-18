@@ -8,18 +8,18 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\UploadedDocumentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use App\Repository\ProposalRepository;
 use Swagger\Annotations as SWG;
-use App\Entity\Proposal;
+use App\Entity\User;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations\RequestParam;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
+use FOS\RestBundle\Controller\Annotations\FileParam;
+use Symfony\Component\Validator\Constraints;
 
 class UploadedDocumentController extends AbstractFOSRestController
 {
     private $uploadedDocRepo;
 
-    static private $postUploadedDocumentRequiredAttributes = [
-        'title' => 'setTitle',
-        'data' => 'setData',
-    ];
 
     static private $patchUploadedDocumentModifiableAttributes = [
         'title' => 'setTitle'
@@ -67,19 +67,20 @@ class UploadedDocumentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/proposals/{id}/up_docs/")
+     * @Rest\Post("/api/users/{id}/up_docs/")
+     * @Rest\FileParam(name = "image", description = "the media we wwant to upload", nullable=false,image=true)
+     * @param ParamFetcher $paramFetcher
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
      *  type = "number",
-     *  description = "the id of the proposal",
-     *  required = true
+     *  description = "the ID of the User who submits the file"
      * )
      * @SWG\Parameter(
      *  name = "title",
      *  in = "body",
      *  type = "string",
-     *  description = "the title of the document which will be added to the proposal",
+     *  description = "the title of the document which will be added",
      *  required = true,
      *  @SWG\Schema(
      *      example = "document 1",
@@ -90,7 +91,7 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  name = "data",
      *  in = "body",
      *  type = "file",
-     *  description = "the file of the document which will be added to the proposal",
+     *  description = "the file of the document which will be added",
      *  required = true,
      *  @SWG\Schema(
      *      example = "document.pdf",
@@ -105,29 +106,50 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  response = 400,
      *  description = "Uncorect request"
      * )
+     * 
      */
-    public function postApiUploadedDocument(Request $request, Proposal $proposal, EntityManagerInterface $em)
+    public function postApiUploadedDocument(ParamFetcher $paramFetcher, User $user, EntityManagerInterface $em, Request $request)
     {
         $uploadedDocument=new UploadedDocument();
 
-        if(!$proposal) {
-            throw new NotFoundHttpException('This proposal does not exist');
+        if(!$user) {
+            throw new NotFoundHttpException('This user does not exist');
         }
-        $uploadedDocument->setProposalId($proposal);
+        $uploadedDocument->setUserId($user);
 
-        foreach(static::$postUploadedDocumentRequiredAttributes as $attribute => $setter) {
-            if(is_null($request->get($attribute))) {
-                continue;
+        $file = $paramFetcher->get('image');
+        if($file)
+        {
+            $fileName = md5(uniqid()) . '.' . $file->guessClientExtension();
+
+            $file->move(
+                $this->getUploadsDir(),
+                $fileName
+            );
+
+            $uploadedDocument->setData($fileName);
+            $uploadedDocument->setDataPath('/uploads/' . $fileName);
+
+            if($request->get('title'))
+            {
+                $uploadedDocument->setTitle($request->get('title'));
             }
-            $uploadedDocument->$setter($request->get($attribute));
+
+            $em->persist($uploadedDocument);
+            $em->flush();
+
+            $data = $request->getUriForPath(
+                $uploadedDocument->getDataPath()
+            );
         }
-
-
-        $em->persist($uploadedDocument);
-        $em->flush();
 
         return $this->view($uploadedDocument);
 
+    }
+
+    private function getUploadsDir()
+    {
+        return $this->getParameter('uploads_dir');
     }
 
     /**

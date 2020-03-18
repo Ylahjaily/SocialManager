@@ -19,13 +19,13 @@ class User implements Userinterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      * @Assert\NotBlank()
      * @Assert\Email(
      *  message = "The email '{{ value }}' is not a valid email."
@@ -35,7 +35,7 @@ class User implements Userinterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      * @Assert\NotBlank()
      * @Assert\Length(
      * min = 2,
@@ -48,7 +48,7 @@ class User implements Userinterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      * @Assert\NotBlank()
      * @Assert\Length(
      * min = 2,
@@ -61,14 +61,14 @@ class User implements Userinterface
 
     /**
      * @ORM\Column(type="simple_array")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      * @Assert\NotBlank()
      */
     private $roles = [];
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      * @Assert\NotBlank()
      */
     private $created_at;
@@ -81,20 +81,20 @@ class User implements Userinterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Review", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user","like", "social", "publication"})
+     * @Groups({"user","like", "social"})
      */
     private $reviews;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
+     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
      * @Assert\NotBlank()
      */
     private $apiKey;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user", "like", "reviewComment", "publication"})
+     * @Groups({"user", "like", "reviewComment"})
      */
     private $comments;
 
@@ -106,7 +106,7 @@ class User implements Userinterface
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\SocialNetwork", mappedBy="user_id")
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "review", "comment", "like", "reviewComment"})
      */
     private $socialNetworks;
 
@@ -129,7 +129,7 @@ class User implements Userinterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Publication", mappedBy="user_id", orphanRemoval=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment"})
+     * @Groups({"user", "review", "comment", "like", "reviewComment"})
      */
     private $publications;
 
