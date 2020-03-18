@@ -17,6 +17,7 @@ use Swagger\Annotations as SWG;
 use App\Entity\SocialNetwork;
 use App\Entity\Proposal;
 use Abraham\TwitterOAuth\TwitterOAuth;
+use App\Entity\UploadedDocument;
 
 class PublicationController extends AbstractFOSRestController
 {
@@ -133,17 +134,117 @@ class PublicationController extends AbstractFOSRestController
         $con_sec = $publication->getConsumerSecret();
         $acc_tok = $publication->getAccessToken();
         $acc_sec = $publication->getAccessTokenSecret();
-        $text = $proposal->getTextContent();
+        $text =$proposal->getTextContent();
+
+        $social->addProposal($proposal);
+        
         $connection = new TwitterOAuth($con_key, $con_sec, $acc_tok, $acc_sec);
         $content = $connection->get("account/verify_credentials");
 
-        $statues = $connection->post("statuses/update", ["status" => $text]);
+        $statues = $connection->post("statuses/update", [
+            "status" => $text
+            ]
+        );
+        $em->persist($social);
         $em->persist($publication);
         $em->flush();
 
         return $this->view($publication);
 
     }
+
+    /**
+     * @Rest\Post("/api/up_docs/{id}/publications/")
+     * @Rest\View(serializerGroups={"publication"})
+     * @SWG\Parameter(
+     *  name = "id",
+     *  in = "path",
+     *  type = "number",
+     *  description = "the id of the file",
+     *  required = true
+     * )
+     * @SWG\Parameter(
+     *  name = "user_id",
+     *  in = "body",
+     *  type = "number",
+     *  description = "the ID of the User who publishes the file",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "5",
+     *      type = "number"
+     *  )
+     * )
+     * @SWG\Parameter(
+     *  name = "social_network_id",
+     *  in = "body",
+     *  type = "number",
+     *  description = "the ID of the social network which will be published",
+     *  required = true,
+     *  @SWG\Schema(
+     *      example = "2",
+     *      type = "number"
+     *  )
+     * )
+     * @SWG\Response(
+     *  response = 201,
+     *  description = "Publication created"
+     * )
+     * @SWG\Response(
+     *  response = 400,
+     *  description = "Uncorect request"
+     * )
+     */
+    public function postApiMediaPublication(Request $request, UploadedDocument $uploadedDoc, UserRepository $userRepository, SocialNetworkRepository $socialRepo, EntityManagerInterface $em)
+    {
+        $publication=new Publication();
+
+        if(!$uploadedDoc) {
+            throw new NotFoundHttpException('This file does not exist');
+        }
+        $publication->setUploadedDocumentId($uploadedDoc);
+
+        if(!is_null($request->get('user_id'))) {
+            $user = $userRepository->find($request->get('user_id'));
+            if(!is_null($user)) {
+                $publication->setUserId($user);
+            }
+        }
+
+        if(!is_null($request->get('social_network_id'))) {
+            $social = $socialRepo->find($request->get('social_network_id'));
+            if(!is_null($social)) {
+                $publication->setSocialNetworkId($social);
+            }
+        }
+
+        $con_key = $publication->getConsumerKey();
+        $con_sec = $publication->getConsumerSecret();
+        $acc_tok = $publication->getAccessToken();
+        $acc_sec = $publication->getAccessTokenSecret();
+
+        $social->addUploadedDocument($uploadedDoc);
+        
+        $connection = new TwitterOAuth($con_key, $con_sec, $acc_tok, $acc_sec);
+        $content = $connection->get("account/verify_credentials");
+
+        $med = $uploadedDoc->getDataPath();
+        $title = $uploadedDoc->getTitle();
+
+        $media = $connection->upload('media/upload', [
+            'media' => $med
+            ]);
+        $parameters = [
+            'status' => $title,
+            'media_ids' => $media->media_id_string
+            ];
+        $result = $connection->post('statuses/update', $parameters);
+        $em->persist($social);
+        $em->persist($publication);
+        $em->flush();
+
+        return $this->view($publication);
+
+    }    
 
     /**
      * @Rest\Delete("api/publications/{id}")
@@ -175,7 +276,6 @@ class PublicationController extends AbstractFOSRestController
             $em->flush();
             return $this->view("La suppression a bien été effectuée");
         }
-
     }
 
     /**

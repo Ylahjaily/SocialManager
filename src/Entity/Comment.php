@@ -28,7 +28,7 @@ class Comment
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      * @Groups({"user", "comment"})
      */
     private $proposal_id;
@@ -47,6 +47,11 @@ class Comment
      * @Assert\NotBlank()
      */
     private $created_at;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\UploadedDocument", inversedBy="comments")
+     */
+    private $uploaded_document_id;
 
     public function __construct()
     {
@@ -102,6 +107,18 @@ class Comment
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUploadedDocumentId(): ?UploadedDocument
+    {
+        return $this->uploaded_document_id;
+    }
+
+    public function setUploadedDocumentId(?UploadedDocument $uploaded_document_id): self
+    {
+        $this->uploaded_document_id = $uploaded_document_id;
 
         return $this;
     }
