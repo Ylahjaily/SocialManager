@@ -7,11 +7,17 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\ReviewRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
 use App\Repository\ProposalRepository;
 use Swagger\Annotations as SWG;
 use App\Entity\Proposal;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ReviewController extends AbstractFOSRestController
 {
@@ -29,21 +35,34 @@ class ReviewController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/reviews/")
-     * @Rest\View(serializerGroups={"review"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of reviews"
      * )
      */
-    public function getApiReviews()
+    public function getApiReviews(SerializerInterface $serializer)
     {
         $reviews=$this->reviewRepo->findAll();
-        return $this->view($reviews);
+
+        if(!$reviews) {
+            throw new NotFoundHttpException('Reviews do not exist');
+        }
+
+        $json = $serializer->serialize(
+            $reviews,
+            'json', ['groups' => 'review']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/reviews/{id}")
-     * @Rest\View(serializerGroups={"review"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -60,14 +79,27 @@ class ReviewController extends AbstractFOSRestController
      *  description = "review not found"
      * )
      */
-    public function getApiReview(Review $review)
+    public function getApiReview(Review $review,SerializerInterface $serializer)
     {
-        return $this->view($review);
+        if(!$review) {
+            throw new NotFoundHttpException('Review does not exist');
+        }
+
+        $json = $serializer->serialize(
+            $review,
+            'json', ['groups' => 'review']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Post("/api/proposals/{id}/reviews/")
-     * @Rest\View(serializerGroups={"review"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -95,13 +127,13 @@ class ReviewController extends AbstractFOSRestController
      *  description = "Uncorect request"
      * )
      */
-    public function postApiReview(Request $request, Proposal $proposal, UserRepository $userRepository, EntityManagerInterface $em)
+    public function postApiReview(Request $request, Proposal $proposal, UserRepository $userRepository,SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator)
     {
         $review=new Review();
         $review->setIsApproved(false);
 
-        if(!$proposal) {
-            throw new NotFoundHttpException('This proposal does not exist');
+        if(!$review) {
+            throw new NotFoundHttpException('This review does not exist');
         }
         $review->setProposalId($proposal);
 
@@ -112,11 +144,33 @@ class ReviewController extends AbstractFOSRestController
             }
         }
 
+        $validationErrors = $validator->validate($review);
+
+        /** @var ConstraintViolation $constraintViolation */
+        foreach($validationErrors as $constraintViolation) {
+            $message = $constraintViolation->getMessage();
+            $propertyPath = $constraintViolation->getPropertyPath();
+            $errors[] = ['property' => $propertyPath, 'message' => $message];
+        }
+
+        if(!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
         $em->persist($review);
         $em->flush();
 
-        return $this->view($review);
+        $json = $serializer->serialize(
+            $proposal,
+            'json', ['groups' => 'review']
+        );
 
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(201);
+        return $response;
     }
 
     /**
@@ -139,17 +193,23 @@ class ReviewController extends AbstractFOSRestController
      */
     public function deleteApiReview(Review $review, EntityManagerInterface $em)
     {
-        if($review)
+        if(!$review)
         {
-            $em->remove($review);
-            $em->flush();
-            return $this->view("La suppression a bien été effectuée");
+            throw new NotFoundHttpException('Review does not exist');
         }
+        $em->remove($review);
+        $em->flush();
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent("Proposal deleted");
+        $response->setStatusCode(204);
+        return $response;
     }
 
     /**
      * @Rest\Patch("/api/reviewer/reviews/{id}")
-     * @Rest\View(serializerGroups={"review"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -181,8 +241,12 @@ class ReviewController extends AbstractFOSRestController
      *  description = "Review doesn't exist"
      * )
      */
-    public function patchApiReview(Review $review, Request $request,EntityManagerInterface $em)
+    public function patchApiReview(Review $review, Request $request,ValidatorInterface $validator,SerializerInterface $serializer, EntityManagerInterface $em)
     {
+        if(!$review) {
+            throw new NotFoundHttpException('This review does not exist');
+        }
+
         foreach(static::$patchReviewModifiableAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
                 continue;
@@ -190,8 +254,33 @@ class ReviewController extends AbstractFOSRestController
             $review->$setter($request->get($attribute));
             $review->setDecisionAt(new \DateTime('now'));
         }
+
+        $validationErrors = $validator->validate($review);
+
+        /** @var ConstraintViolation $constraintViolation */
+        foreach($validationErrors as $constraintViolation) {
+            $message = $constraintViolation->getMessage();
+            $propertyPath = $constraintViolation->getPropertyPath();
+            $errors[] = ['property' => $propertyPath, 'message' => $message];
+        }
+
+        if(!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
         $em->flush();
-        return $this->view($review);
+
+        $json = $serializer->serialize(
+            $review,
+            'json', ['groups' => 'review']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
 }
