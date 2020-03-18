@@ -7,16 +7,21 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\UserRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Entity\Proposal;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends AbstractFOSRestController
 {
     private $userRepo;
-    
+
     static private $patchUserModifiableAttributes = [
         'lastName' => 'setLastName',
         'firstName' => 'setFirstName',
@@ -32,7 +37,6 @@ class UserController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/users/{email}")
-     * @Rest\View(serializerGroups={"user"})
      * @SWG\Parameter(
      *  name = "email",
      *  in = "path",
@@ -49,9 +53,24 @@ class UserController extends AbstractFOSRestController
      *  description = "user not found"
      * )
      */
-    public function getApiUser(User $user)
+    public function getApiUser(User $user,SerializerInterface $serializer)
     {
-        return $this->view($user);
+
+        if(!$user) {
+            throw new NotFoundHttpException('This user does not exist');
+        }
+
+        $json = $serializer->serialize(
+            $user,
+            'json', ['groups' => 'user']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
@@ -62,16 +81,26 @@ class UserController extends AbstractFOSRestController
      *   description = "return list of users"
      * )
      */
-    public function getApiUsers()
+    public function getApiUsers(SerializerInterface $serializer)
     {
         $users = $this->userRepo->findAll();
-        return $this->view($users);
+
+        $json = $serializer->serialize(
+            $users,
+            'json', ['groups' => 'user']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
-     * @ParamConverter("user", converter="fos_rest.request_body")
      * @Rest\Post("api/users/")
-     * @Rest\View(serializerGroups={"user"})
+     * @ParamConverter("user", converter="fos_rest.request_body")
      * @SWG\Parameter(
      *  name = "email",
      *  in = "body",
@@ -144,11 +173,35 @@ class UserController extends AbstractFOSRestController
      *  description = "uncorrect request"
      * )
      */
-    public function postApiUser(User $user, EntityManagerInterface $em)
+    public function postApiUser(User $user, ValidatorInterface $validator, EntityManagerInterface $em, SerializerInterface $serializer)
     {
+        $validationErrors = $validator->validate($user);
+
+        /** @var ConstraintViolation $constraintViolation */
+        foreach($validationErrors as $constraintViolation) {
+            $message = $constraintViolation->getMessage();
+            $propertyPath = $constraintViolation->getPropertyPath();
+            $errors[] = ['property' => $propertyPath, 'message' => $message];
+        }
+
+        if(!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
         $em->persist($user);
         $em->flush();
-        return $this->view($user);
+
+        $json = $serializer->serialize(
+            $user,
+            'json', ['groups' => 'user']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(201);
+        return $response;
     }
 
     /**
@@ -175,17 +228,22 @@ class UserController extends AbstractFOSRestController
      */
     public function deleteApiUser(User $user, EntityManagerInterface $em)
     {
-        if($user)
-        {
+        if(!$user) {
+            throw new NotFoundHttpException('This user does not exist');
+        }
             $em->remove($user);
             $em->flush();
-            return $this->view("La suppression a bien été effectuée");
-        }
+
+            $response = new Response();
+            $response->headers->set('Content-Type', 'application/json');
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+            $response->setContent("User deleted");
+            $response->setStatusCode(204);
+            return $response;
     }
 
     /**
      * @Rest\Patch("/api/admin/users/{id}")
-     * @Rest\View(serializerGroups={"user"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -272,16 +330,44 @@ class UserController extends AbstractFOSRestController
      *  description = "User doesn't exist"
      * )
      */
-    public function patchApiUser(User $user, Request $request,EntityManagerInterface $em)
+    public function patchApiUser(User $user, Request $request, ValidatorInterface $validator, EntityManagerInterface $em, SerializerInterface $serializer)
     {
+        if(!$user) {
+            throw new NotFoundHttpException('This user does not exist');
+        }
+
         foreach(static::$patchUserModifiableAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
                 continue;
             }
             $user->$setter($request->get($attribute));
         }
+
+        $validationErrors = $validator->validate($user);
+
+        /** @var ConstraintViolation $constraintViolation */
+        foreach($validationErrors as $constraintViolation) {
+            $message = $constraintViolation->getMessage();
+            $propertyPath = $constraintViolation->getPropertyPath();
+            $errors[] = ['property' => $propertyPath, 'message' => $message];
+        }
+
+        if(!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
         $em->flush();
-        return $this->view($user);
+        $json = $serializer->serialize(
+            $user,
+            'json', ['groups' => 'user']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
@@ -291,7 +377,7 @@ class UserController extends AbstractFOSRestController
      *  in = "path",
      *  type = "number",
      *  description = "the ID of the proposal",
-     *  required = true 
+     *  required = true
      * )
      * @SWG\Response(
      *  response = 200,
@@ -302,7 +388,7 @@ class UserController extends AbstractFOSRestController
      *  description = "Proposal not found"
      * )
      */
-    public function getReviewersByProposal(Proposal $proposal)
+    public function getReviewersByProposal(Proposal $proposal,SerializerInterface $serializer)
     {
         if(!$proposal) {
             throw new NotFoundHttpException('This proposal does not exist');
@@ -310,8 +396,19 @@ class UserController extends AbstractFOSRestController
         $reviewers=$this->userRepo->findReviewersByProposal($proposal);
 
         if(!$reviewers) {
-            throw new NotFoundHttpException('Reviewers does not exist');
+            throw new NotFoundHttpException('Reviewers does not exists for this review');
         }
-        return $this->view($reviewers);
+
+        $json = $serializer->serialize(
+            $proposal,
+            'json', ['groups' => 'proposal']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 }
