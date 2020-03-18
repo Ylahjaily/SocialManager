@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Entity\Proposal;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -12,6 +14,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProposalController extends AbstractFOSRestController
 {
@@ -38,49 +43,92 @@ class ProposalController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/proposals")
-     * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of proposals"
      * )
      */
-    public function getApiProposals()
+    public function getApiProposals(SerializerInterface $serializer)
     {
         $proposals=$this->proposalRepo->findAll();
-        return $this->view($proposals);
+
+        if(!$proposals) {
+            throw new NotFoundHttpException('Proposals do not exist');
+        }
+
+        $json = $serializer->serialize(
+            $proposals,
+            'json', ['groups' => 'proposal']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
+
     }
 
     /**
      * @Rest\Get("/api/communicant/proposals/approved")
-     * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of proposals which have been approved"
      * )
      */
-    public function getApiApprovedProposals()
+    public function getApiApprovedProposals(SerializerInterface $serializer)
     {
+
         $proposals=$this->proposalRepo->findApprovedProposals();
-        return $this->view($proposals);
+
+        if(!$proposals) {
+            throw new NotFoundHttpException('Proposals do not exist');
+        }
+
+        $json = $serializer->serialize(
+            $proposals,
+            'json', ['groups' => 'proposal']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/proposals/unprocessed")
-     * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of proposals which havent been treated"
      * )
      */
-    public function getApiUnProcessedProposals()
+    public function getApiUnProcessedProposals(SerializerInterface $serializer)
     {
         $proposals=$this->proposalRepo->findUnProcessedProposals();
-        return $this->view($proposals);
+
+        if(!$proposals) {
+            throw new NotFoundHttpException('Proposals do not exist');
+        }
+
+        $json = $serializer->serialize(
+            $proposals,
+            'json', ['groups' => 'proposal']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/reviewer/{id}/proposals")
-     * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -97,7 +145,7 @@ class ProposalController extends AbstractFOSRestController
      *  description = "User doesn't exist"
      * )
      */
-    public function getApiApprovedProposalsByReviewer(User $user)
+    public function getApiApprovedProposalsByReviewer(User $user,SerializerInterface $serializer)
     {
         if(!$user) {
             throw new NotFoundHttpException('This user does not exist');
@@ -107,12 +155,22 @@ class ProposalController extends AbstractFOSRestController
         if(!$proposals) {
             throw new NotFoundHttpException('Proposal does not exist');
         }
-        return $this->view($proposals);
+
+        $json = $serializer->serialize(
+            $proposals,
+            'json', ['groups' => 'proposal']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/reviewer/{id}/proposals/rejected")
-     * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -129,7 +187,7 @@ class ProposalController extends AbstractFOSRestController
      *  description = "User doesn't exist"
      * )
      */
-    public function getApiRejectedProposalsByReviewer(User $user)
+    public function getApiRejectedProposalsByReviewer(User $user, SerializerInterface $serializer)
     {
         if(!$user) {
             throw new NotFoundHttpException('This user does not exist');
@@ -139,7 +197,18 @@ class ProposalController extends AbstractFOSRestController
         if(!$proposals) {
             throw new NotFoundHttpException('Proposal does not exist');
         }
-        return $this->view($proposals);
+
+        $json = $serializer->serialize(
+            $proposals,
+            'json', ['groups' => 'proposal']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
@@ -161,7 +230,7 @@ class ProposalController extends AbstractFOSRestController
      *  description = "User doesn't exist"
      * )
      */
-    public function getApiRejectedProposalsByMember(User $user)
+    public function getApiRejectedProposalsByMember(User $user, SerializerInterface $serializer)
     {
         if(!$user) {
             throw new NotFoundHttpException('This user does not exist');
@@ -171,12 +240,22 @@ class ProposalController extends AbstractFOSRestController
         if(!$proposals) {
             throw new NotFoundHttpException('Proposal does not exist');
         }
-        return $this->view($proposals);
+
+        $json = $serializer->serialize(
+            $proposals,
+            'json', ['groups' => 'proposal']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/proposals/{id}")
-     * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -200,7 +279,6 @@ class ProposalController extends AbstractFOSRestController
 
     /**
      * @Rest\Post("/api/profile/{id}/proposals")
-     * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -239,7 +317,7 @@ class ProposalController extends AbstractFOSRestController
      *  description = "Uncorect request"
      * )
      */
-    public function postApiProposal(Request $request, User $user, EntityManagerInterface $em)
+    public function postApiProposal(Request $request, User $user,ValidatorInterface $validator, EntityManagerInterface $em, SerializerInterface $serializer)
     {
         $proposal=new Proposal();
 
@@ -263,11 +341,33 @@ class ProposalController extends AbstractFOSRestController
             }
         }
 
+        $validationErrors = $validator->validate($proposal);
+
+        /** @var ConstraintViolation $constraintViolation */
+        foreach($validationErrors as $constraintViolation) {
+            $message = $constraintViolation->getMessage();
+            $propertyPath = $constraintViolation->getPropertyPath();
+            $errors[] = ['property' => $propertyPath, 'message' => $message];
+        }
+
+        if(!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
         $em->persist($proposal);
         $em->flush();
 
-        return $this->view($proposal);
+        $json = $serializer->serialize(
+            $proposal,
+            'json', ['groups' => 'proposal']
+        );
 
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(201);
+        return $response;
     }
 
     /**
@@ -292,19 +392,24 @@ class ProposalController extends AbstractFOSRestController
      *  description = "User not allowed"
      * )
      */
-    public function deleteApiProposal(Proposal $proposal, EntityManagerInterface $em)
+    public function deleteApiProposal(Proposal $proposal, EntityManagerInterface $em, SerializerInterface $serializer)
     {
-        if($proposal)
-        {
-            $em->remove($proposal);
-            $em->flush();
-            return $this->view("La suppression a bien été effectuée");
+        if(!$proposal) {
+            throw new NotFoundHttpException('This proposal does not exist');
         }
+        $em->remove($proposal);
+        $em->flush();
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent("Proposal deleted");
+        $response->setStatusCode(204);
+        return $response;
     }
 
     /**
      * @Rest\Patch("api/reviewer/proposals/{id}")
-     * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -347,15 +452,19 @@ class ProposalController extends AbstractFOSRestController
      *  description = "Proposal doesn't exist"
      * )
      */
-    public function patchApiProposal(Proposal $proposal, Request $request,EntityManagerInterface $em)
+    public function patchApiProposal(Proposal $proposal, Request $request, ValidatorInterface $validator, EntityManagerInterface $em, SerializerInterface $serializer)
     {
+        if(!$proposal) {
+            throw new NotFoundHttpException('This proposal does not exist');
+        }
+
         foreach(static::$patchProposalModifiableAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
                 continue;
-            } 
+            }
             $proposal->$setter($request->get($attribute));
         }
-        
+
         if(!is_null($request->get('link'))) {
             $link = $request->get('link');
             if(preg_match('#^(http|https)://[\w-]+[\w.-]+\.[a-zA-Z]{2,6}#i', $link))
@@ -363,19 +472,43 @@ class ProposalController extends AbstractFOSRestController
                 $proposal->setLink($link);
             }
         }
+
+        $validationErrors = $validator->validate($proposal);
+
+        /** @var ConstraintViolation $constraintViolation */
+        foreach($validationErrors as $constraintViolation) {
+            $message = $constraintViolation->getMessage();
+            $propertyPath = $constraintViolation->getPropertyPath();
+            $errors[] = ['property' => $propertyPath, 'message' => $message];
+        }
+
+        if(!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
         $em->flush();
-        return $this->view($proposal);
+
+        $json = $serializer->serialize(
+            $proposal,
+            'json', ['groups' => 'proposal']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/profile/proposals/published")
-     * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of proposals which have been published on social networks"
      * )
      */
-    public function getApiPublishedProposals()
+    public function getApiPublishedProposals(SerializerInterface $serializer)
     {
         $published_proposals = $this->proposalRepo->findPublishedProposals();
 
@@ -383,13 +516,21 @@ class ProposalController extends AbstractFOSRestController
             throw new NotFoundHttpException('Ther is no published proposal');
         }
 
-        return $this->view($published_proposals);
+        $json = $serializer->serialize(
+            $published_proposals,
+            'json', ['groups' => 'proposal']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
-    
     /**
      * @Rest\Get("/api/profile/{id}/published")
-     * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -406,7 +547,7 @@ class ProposalController extends AbstractFOSRestController
      *  description = "User doesn't exist"
      * )
      */
-    public function getApiPublishedProposalsByUser(User $user)
+    public function getApiPublishedProposalsByUser(User $user, SerializerInterface $serializer)
     {
         if(!$user) {
             throw new NotFoundHttpException('This user does not exist');
@@ -416,12 +557,22 @@ class ProposalController extends AbstractFOSRestController
         if(!$published_proposals) {
             throw new NotFoundHttpException('There is no published proposal by you...');
         }
-        return $this->view($published_proposals);
+
+        $json = $serializer->serialize(
+            $published_proposals,
+            'json', ['groups' => 'proposal']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/profile/{id}/proposals/approved")
-     * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -438,7 +589,7 @@ class ProposalController extends AbstractFOSRestController
      *  description = "User doesn't exist"
      * )
      */
-    public function getApiApprovedProposalsByMember(User $user)
+    public function getApiApprovedProposalsByMember(User $user, SerializerInterface $serializer)
     {
         if(!$user) {
             throw new NotFoundHttpException('This user does not exist');
@@ -448,7 +599,17 @@ class ProposalController extends AbstractFOSRestController
         if(!$proposals) {
             throw new NotFoundHttpException('There is no approved proposal');
         }
-        return $this->view($proposals);
-    }
 
+        $json = $serializer->serialize(
+            $proposals,
+            'json', ['groups' => 'proposal']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
+    }
 }

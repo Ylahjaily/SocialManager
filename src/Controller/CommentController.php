@@ -9,10 +9,15 @@ use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UserRepository;
 use App\Repository\ProposalRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Proposal;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CommentController extends AbstractFOSRestController
 {
@@ -33,21 +38,34 @@ class CommentController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/comments/")
-     * @Rest\View(serializerGroups={"comment"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of comments"
      * )
      */
-    public function getApiComments()
+    public function getApiComments(SerializerInterface $serializer)
     {
         $comments=$this->commentRepo->findAll();
-        return $this->view($comments);
+
+        if(!$comments) {
+            throw new NotFoundHttpException('The is no comments yet');
+        }
+
+        $json = $serializer->serialize(
+            $comments,
+            'json', ['groups' => 'comment']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/comments/{id}")
-     * @Rest\View(serializerGroups={"comment"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -64,14 +82,28 @@ class CommentController extends AbstractFOSRestController
      *  description = "comment not found"
      * )
      */
-    public function getApiComment(Comment $comment)
+    public function getApiComment(Comment $comment, SerializerInterface $serializer)
     {
-        return $this->view($comment);
+
+        if(!$comment) {
+            throw new NotFoundHttpException('This comment does not exist');
+        }
+
+        $json = $serializer->serialize(
+            $comment,
+            'json', ['groups' => 'comment']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Post("/api/profile/proposals/{id}/comments/")
-     * @Rest\View(serializerGroups={"comment"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -110,7 +142,7 @@ class CommentController extends AbstractFOSRestController
      *  description = "Uncorect request"
      * )
      */
-    public function postApiComment(Request $request, Proposal $proposal, UserRepository $userRepository, EntityManagerInterface $em)
+    public function postApiComment(Request $request, Proposal $proposal, UserRepository $userRepository,ValidatorInterface $validator, EntityManagerInterface $em, SerializerInterface $serializer)
     {
         $comment=new Comment();
 
@@ -132,11 +164,34 @@ class CommentController extends AbstractFOSRestController
                 $comment->setUserId($user);
             }
         }
+
+        $validationErrors = $validator->validate($proposal);
+
+        /** @var ConstraintViolation $constraintViolation */
+        foreach($validationErrors as $constraintViolation) {
+            $message = $constraintViolation->getMessage();
+            $propertyPath = $constraintViolation->getPropertyPath();
+            $errors[] = ['property' => $propertyPath, 'message' => $message];
+        }
+
+        if(!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
         $em->persist($comment);
         $em->flush();
 
-        return $this->view($comment);
+        $json = $serializer->serialize(
+            $comment,
+            'json', ['groups' => 'comment']
+        );
 
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(201);
+        return $response;
     }
 
     /**
@@ -163,17 +218,23 @@ class CommentController extends AbstractFOSRestController
      */
     public function deleteApiComment(Comment $comment, EntityManagerInterface $em)
     {
-        if($comment)
+        if(!$comment)
         {
-            $em->remove($comment);
-            $em->flush();
-            return $this->view("La suppression a bien été effectuée");
+            throw new NotFoundHttpException('This comment does not exist');
         }
+        $em->remove($comment);
+        $em->flush();
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent("Comment deleted");
+        $response->setStatusCode(204);
+        return $response;
     }
 
     /**
      * @Rest\Patch("api/comments/{id}")
-     * @Rest\View(serializerGroups={"comment"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -205,21 +266,48 @@ class CommentController extends AbstractFOSRestController
      *  description = "Comment doesn't exist"
      * )
      */
-    public function patchApiComment(Comment $comment, Request $request,EntityManagerInterface $em)
+    public function patchApiComment(Comment $comment, Request $request,EntityManagerInterface $em, ValidatorInterface $validator, SerializerInterface $serializer)
     {
+        if(!$comment) {
+            throw new NotFoundHttpException('This comment does not exist');
+        }
+
         foreach(static::$patchCommentModifiableAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
                 continue;
             }
             $comment->$setter($request->get($attribute));
         }
+
+        $validationErrors = $validator->validate($comment);
+
+        /** @var ConstraintViolation $constraintViolation */
+        foreach($validationErrors as $constraintViolation) {
+            $message = $constraintViolation->getMessage();
+            $propertyPath = $constraintViolation->getPropertyPath();
+            $errors[] = ['property' => $propertyPath, 'message' => $message];
+        }
+
+        if(!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
         $em->flush();
-        return $this->view($comment);
+        $json = $serializer->serialize(
+            $comment,
+            'json', ['groups' => 'comment']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/profile/proposals/{id}/comments")
-     * @Rest\View(serializerGroups={"comment"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -236,7 +324,7 @@ class CommentController extends AbstractFOSRestController
      *  description = "Proposal doesn't exist"
      * )
      */
-    public function getApiCommentsByProposal(Proposal $proposal)
+    public function getApiCommentsByProposal(Proposal $proposal, SerializerInterface $serializer)
     {
         if(!$proposal) {
             throw new NotFoundHttpException('This proposal does not exist');
@@ -246,6 +334,17 @@ class CommentController extends AbstractFOSRestController
         if(!$comments) {
             throw new NotFoundHttpException('There is no comments...');
         }
-        return $this->view($comments);
+
+        $json = $serializer->serialize(
+            $comments,
+            'json', ['groups' => 'comment']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 }
