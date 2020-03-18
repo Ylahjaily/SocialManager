@@ -7,12 +7,17 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\ReviewCommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
 use App\Repository\ReviewRepository;
 use App\Entity\Review;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ReviewCommentController extends AbstractFOSRestController
 {
@@ -33,16 +38,30 @@ class ReviewCommentController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/review_comments/")
-     * @Rest\View(serializerGroups={"reviewComment"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of review comments"
      * )
      */
-    public function getApiReviewComments()
+    public function getApiReviewComments(SerializerInterface $serializer)
     {
         $review_comments=$this->reviewCommentRepo->findAll();
-        return $this->view($review_comments);
+
+        if(!$review_comments) {
+            throw new NotFoundHttpException('There is no review comments');
+        }
+
+        $json = $serializer->serialize(
+            $review_comments,
+            'json', ['groups' => 'reviewComment']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
@@ -64,14 +83,28 @@ class ReviewCommentController extends AbstractFOSRestController
      *  description = "review comment not found"
      * )
      */
-    public function getApiReviewComment(ReviewComment $reviewComment)
+    public function getApiReviewComment(ReviewComment $reviewComment, SerializerInterface $serializer)
     {
-        return $this->view($reviewComment);
+
+        if(!$reviewComment) {
+            throw new NotFoundHttpException('This comment does not exist');
+        }
+
+        $json = $serializer->serialize(
+            $reviewComment,
+            'json', ['groups' => 'reviewComment']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Post("/api/profile/reviews/{id}/review_comments/")
-     * @Rest\View(serializerGroups={"reviewComment"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -110,7 +143,7 @@ class ReviewCommentController extends AbstractFOSRestController
      *  description = "Uncorect request"
      * )
      */
-    public function postApiReviewComment(Request $request, Review $review, UserRepository $userRepository, EntityManagerInterface $em)
+    public function postApiReviewComment(Request $request, Review $review, UserRepository $userRepository,ValidatorInterface $validator,SerializerInterface $serializer, EntityManagerInterface $em)
     {
         $reviewComment=new ReviewComment();
 
@@ -133,11 +166,33 @@ class ReviewCommentController extends AbstractFOSRestController
             }
         }
 
+        $validationErrors = $validator->validate($review);
+
+        /** @var ConstraintViolation $constraintViolation */
+        foreach($validationErrors as $constraintViolation) {
+            $message = $constraintViolation->getMessage();
+            $propertyPath = $constraintViolation->getPropertyPath();
+            $errors[] = ['property' => $propertyPath, 'message' => $message];
+        }
+
+        if(!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
         $em->persist($reviewComment);
         $em->flush();
 
-        return $this->view($reviewComment);
+        $json = $serializer->serialize(
+            $reviewComment,
+            'json', ['groups' => 'reviewComment']
+        );
 
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(201);
+        return $response;
     }
 
     /**
@@ -160,17 +215,23 @@ class ReviewCommentController extends AbstractFOSRestController
      */
     public function deleteApiReviewComment(ReviewComment $reviewComment, EntityManagerInterface $em)
     {
-        if($reviewComment)
+        if(!$reviewComment)
         {
-            $em->remove($reviewComment);
-            $em->flush();
-            return $this->view("La suppression a bien été effectuée");
+            throw new NotFoundHttpException('Review does not exist');
         }
+        $em->remove($reviewComment);
+        $em->flush();
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent("Comment deleted");
+        $response->setStatusCode(204);
+        return $response;
     }
 
     /**
      * @Rest\Patch("api/review_comments/{id}")
-     * @Rest\View(serializerGroups={"reviewComment"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -202,21 +263,49 @@ class ReviewCommentController extends AbstractFOSRestController
      *  description = "Review Comment doesn't exist"
      * )
      */
-    public function patchApiReviewComment(ReviewComment $reviewComment, Request $request,EntityManagerInterface $em)
+    public function patchApiReviewComment(ReviewComment $reviewComment, Request $request,EntityManagerInterface $em, ValidatorInterface $validator, SerializerInterface $serializer)
     {
+        if(!$reviewComment) {
+            throw new NotFoundHttpException('This comment does not exist for this review');
+        }
+
         foreach(static::$patchReviewCommentModifiableAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
                 continue;
             }
             $reviewComment->$setter($request->get($attribute));
         }
+
+        $validationErrors = $validator->validate($reviewComment);
+
+        /** @var ConstraintViolation $constraintViolation */
+        foreach($validationErrors as $constraintViolation) {
+            $message = $constraintViolation->getMessage();
+            $propertyPath = $constraintViolation->getPropertyPath();
+            $errors[] = ['property' => $propertyPath, 'message' => $message];
+        }
+
+        if(!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
         $em->flush();
-        return $this->view($reviewComment);
+
+        $json = $serializer->serialize(
+            $reviewComment,
+            'json', ['groups' => 'reviewComment']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/review/{id}/review_comments")
-     * @Rest\View(serializerGroups={"reviewComment"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -233,17 +322,28 @@ class ReviewCommentController extends AbstractFOSRestController
      *  description = "Review doesn't exist"
      * )
      */
-    public function getApiReviewCommentsByReview(Review $review)
+    public function getApiReviewCommentsByReview(Review $review, SerializerInterface $serializer)
     {
         if(!$review) {
             throw new NotFoundHttpException('This review does not exist');
         }
+
         $review_comments=$this->reviewCommentRepo->findReviewCommentsByReview($review);
 
         if(!$review_comments) {
             throw new NotFoundHttpException('Review comments do not exist');
         }
-        return $this->view($review_comments);
-    }
 
+        $json = $serializer->serialize(
+            $review_comments,
+            'json', ['groups' => 'reviewComment']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
+    }
 }

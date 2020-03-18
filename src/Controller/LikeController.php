@@ -7,12 +7,16 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\LikeRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
-use App\Repository\ProposalRepository;
 use App\Entity\Proposal;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class LikeController extends AbstractFOSRestController
 {
@@ -25,21 +29,34 @@ class LikeController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/likes/")
-     * @Rest\View(serializerGroups={"like"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of likes"
      * )
      */
-    public function getApiLikes()
+    public function getApiLikes(SerializerInterface $serializer)
     {
         $likes=$this->likeRepo->findAll();
-        return $this->view($likes);
+
+        if(!$likes) {
+            throw new NotFoundHttpException('There is no like yet');
+        }
+
+        $json = $serializer->serialize(
+            $likes,
+            'json', ['groups' => 'like']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/likes/{id}")
-     * @Rest\View(serializerGroups={"like"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -56,14 +73,28 @@ class LikeController extends AbstractFOSRestController
      *  description = "like not found"
      * )
      */
-    public function getApiLike(Like $like)
+    public function getApiLike(Like $like, SerializerInterface $serializer)
     {
-        return $this->view($like);
+
+        if(!$like) {
+            throw new NotFoundHttpException('This like does not exist');
+        }
+
+        $json = $serializer->serialize(
+            $like,
+            'json', ['groups' => 'like']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
      * @Rest\Post("/api/profile/proposals/{id}/likes/")
-     * @Rest\View(serializerGroups={"like"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -91,7 +122,7 @@ class LikeController extends AbstractFOSRestController
      *  description = "bad request"
      * )
      */
-    public function postApiLike(Request $request, Proposal $proposal, UserRepository $userRepository, EntityManagerInterface $em)
+    public function postApiLike(Request $request, Proposal $proposal, UserRepository $userRepository,ValidatorInterface $validator,SerializerInterface $serializer, EntityManagerInterface $em)
     {
         $like=new Like();
 
@@ -107,10 +138,33 @@ class LikeController extends AbstractFOSRestController
             }
         }
 
+        $validationErrors = $validator->validate($like);
+
+        /** @var ConstraintViolation $constraintViolation */
+        foreach($validationErrors as $constraintViolation) {
+            $message = $constraintViolation->getMessage();
+            $propertyPath = $constraintViolation->getPropertyPath();
+            $errors[] = ['property' => $propertyPath, 'message' => $message];
+        }
+
+        if(!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
         $em->persist($like);
         $em->flush();
 
-        return $this->view($like);
+        $json = $serializer->serialize(
+            $like,
+            'json', ['groups' => 'like']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(201);
+        return $response;
 
     }
 
@@ -138,18 +192,24 @@ class LikeController extends AbstractFOSRestController
      */
     public function deleteApiLike(Like $like, EntityManagerInterface $em)
     {
-        if($like)
+        if(!$like)
         {
-            $em->remove($like);
-            $em->flush();
-            return $this->view("La suppression a bien été effectuée");
+            throw new NotFoundHttpException('This like does not exist');
         }
 
+        $em->remove($like);
+        $em->flush();
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent("Like deleted");
+        $response->setStatusCode(204);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/profile/proposals/{id}/likes")
-     * @Rest\View(serializerGroups={"like"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -166,7 +226,7 @@ class LikeController extends AbstractFOSRestController
      *  description = "Proposal doesn't exist"
      * )
      */
-    public function getApiLikesByProposal(Proposal $proposal)
+    public function getApiLikesByProposal(Proposal $proposal,SerializerInterface $serializer)
     {
         if(!$proposal) {
             throw new NotFoundHttpException('This proposal does not exist');
@@ -176,7 +236,17 @@ class LikeController extends AbstractFOSRestController
         if(!$likes) {
             throw new NotFoundHttpException('There is no likes...');
         }
-        return $this->view($likes);
-    }
 
+        $json = $serializer->serialize(
+            $likes,
+            'json', ['groups' => 'like']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
+    }
 }
