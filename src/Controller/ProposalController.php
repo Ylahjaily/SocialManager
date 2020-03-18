@@ -400,7 +400,7 @@ class ProposalController extends AbstractFOSRestController
         $response = new Response();
         $response->headers->set('Content-Type', 'application/json');
         $response->headers->set('Access-Control-Allow-Origin', '*');
-        $response->setContent("User deleted");
+        $response->setContent("Proposal deleted");
         $response->setStatusCode(204);
         return $response;
     }
