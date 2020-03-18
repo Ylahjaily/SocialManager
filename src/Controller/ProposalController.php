@@ -397,6 +397,9 @@ class ProposalController extends AbstractFOSRestController
         if(!$proposal) {
             throw new NotFoundHttpException('This proposal does not exist');
         }
+        $em->remove($proposal);
+        $em->flush();
+
         $response = new Response();
         $response->headers->set('Content-Type', 'application/json');
         $response->headers->set('Access-Control-Allow-Origin', '*');
