@@ -20,7 +20,7 @@ class UploadedDocument
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable = false)
      * @Groups({"proposal"})
      * @Assert\NotBlank()
      * @Assert\Length(
@@ -33,11 +33,22 @@ class UploadedDocument
     private $title;
 
     /**
-     * @ORM\Column(type="blob")
+     * @ORM\Column(type="string", length=255)
      * @Groups({"proposal"})
      * @Assert\NotBlank()
      */
     private $data;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="uploadedDocuments")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user_id;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $data_path;
 
 
     public function getId(): ?int
@@ -65,6 +76,30 @@ class UploadedDocument
     public function setData($data): self
     {
         $this->data = $data;
+
+        return $this;
+    }
+
+    public function getUserId(): ?User
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?User $user_id): self
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getDataPath(): ?string
+    {
+        return $this->data_path;
+    }
+
+    public function setDataPath(string $data_path): self
+    {
+        $this->data_path = $data_path;
 
         return $this;
     }

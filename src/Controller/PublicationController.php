@@ -133,7 +133,7 @@ class PublicationController extends AbstractFOSRestController
         $con_sec = $publication->getConsumerSecret();
         $acc_tok = $publication->getAccessToken();
         $acc_sec = $publication->getAccessTokenSecret();
-        $text = $proposal->getTextContent()."";
+        $text = $proposal->getTextContent();
         $connection = new TwitterOAuth($con_key, $con_sec, $acc_tok, $acc_sec);
         $content = $connection->get("account/verify_credentials");
 
