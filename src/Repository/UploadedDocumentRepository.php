@@ -47,4 +47,124 @@ class UploadedDocumentRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+      * @return UploadedDocument[] Returns an array of UploadedDocument objects
+     */
+    public function findApprovedFiles()
+    {
+        return $this->createQueryBuilder('uploadedDocument')
+            ->innerJoin('uploadedDocument.reviews','reviews')
+            ->addSelect('reviews')
+            ->where('reviews.is_approved = true')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * @return UploadedDocument[] Returns an array of UploadedDocument objects
+     */
+    public function findUnProcessedFiles()
+    {
+        return $this->createQueryBuilder('uploadedDoc')
+            ->select('uploadedDoc')
+            ->where( 'SIZE(uploadedDoc.reviews) = 0')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @return UploadedDocument[] Returns an array of UploadedDocument objects
+     */
+    public function findApprovedFilesByReviewer($user)
+    {
+        return $this->createQueryBuilder('uploadedDoc')
+            ->innerJoin('uploadedDoc.reviews','reviews')
+            ->addSelect('reviews')
+            ->setParameter('user', $user)
+            ->where('reviews.is_approved = true')
+            ->andWhere('reviews.user_id = :user')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @return UploadedDocument[] Returns an array of UploadedDocument objects
+     */
+    public function findRejectedFilesByReviewer($user)
+    {
+        return $this->createQueryBuilder('uploadedDoc')
+            ->innerJoin('uploadedDoc.reviews','reviews')
+            ->addSelect('reviews')
+            ->setParameter('user', $user)
+            ->where('reviews.is_approved = false')
+            ->andWhere('reviews.user_id = :user')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @return UploadedDocument[] Returns an array of UploadedDocument objects
+     */
+    public function findRejectedFilesByMember($user)
+    {
+        return $this->createQueryBuilder('uploadedDoc')
+            ->innerJoin('uploadedDoc.reviews','reviews')
+            ->addSelect('reviews')
+            ->setParameter('user', $user)
+            ->where('reviews.is_approved = false')
+            ->andWhere('uploadedDoc.user_id = :user')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @return UploadedDocument[] Returns an array of UploadedDocument objects
+     */
+    public function findPublishedFiles()
+    {
+        return $this->createQueryBuilder('uploadedDoc')
+            ->select('uploadedDoc')
+            ->where('uploadedDoc.is_published = true')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @return UploadedDocument[] Returns an array of UploadedDocument objects
+     */
+    public function findPublishedFilesByUser($user)
+    {
+        return $this->createQueryBuilder('uploadedDoc')
+            ->select('uploadedDoc')
+            ->setParameter('user', $user)
+            ->where('uploadedDoc.is_published = true')
+            ->andWhere('uploadedDoc.user_id = :user')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @return UploadedDocument[] Returns an array of UploadedDocument objects
+     */
+    public function findApprovedFilesByMember($user)
+    {
+        return $this->createQueryBuilder('uploadedDoc')
+            ->innerJoin('uploadedDoc.reviews','reviews')
+            ->addSelect('reviews')
+            ->setParameter('user', $user)
+            ->where('reviews.is_approved = true')
+            ->andWhere('uploadedDoc.user_id = :user')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
 }

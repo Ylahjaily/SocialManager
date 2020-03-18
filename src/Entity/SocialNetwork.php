@@ -52,11 +52,17 @@ class SocialNetwork
      */
     private $publications;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\UploadedDocument", inversedBy="socialNetworks")
+     */
+    private $uploaded_documents;
+
     public function __construct()
     {
         $this->user_id = new ArrayCollection();
         $this->proposals = new ArrayCollection();
         $this->publications = new ArrayCollection();
+        $this->uploaded_documents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -156,6 +162,32 @@ class SocialNetwork
             if ($publication->getSocialNetworkId() === $this) {
                 $publication->setSocialNetworkId(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|UploadedDocument[]
+     */
+    public function getUploadedDocuments(): Collection
+    {
+        return $this->uploaded_documents;
+    }
+
+    public function addUploadedDocument(UploadedDocument $uploadedDocument): self
+    {
+        if (!$this->uploaded_documents->contains($uploadedDocument)) {
+            $this->uploaded_documents[] = $uploadedDocument;
+        }
+
+        return $this;
+    }
+
+    public function removeUploadedDocument(UploadedDocument $uploadedDocument): self
+    {
+        if ($this->uploaded_documents->contains($uploadedDocument)) {
+            $this->uploaded_documents->removeElement($uploadedDocument);
         }
 
         return $this;

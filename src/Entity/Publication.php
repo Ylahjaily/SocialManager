@@ -20,7 +20,7 @@ class Publication
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Proposal", inversedBy="publications")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      * @Groups({"publication"})
      */
     private $proposal_id;
@@ -62,6 +62,11 @@ class Publication
      * @ORM\Column(type="string", length=255)
      */
     private $access_token_secret = "EvxwRqqxsjWU7E2TBPxddlgeoQflGCsx413d26P5GX4Xn";
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\UploadedDocument", inversedBy="publications")
+     */
+    private $uploaded_document_id;
 
     public function __construct()
     {
@@ -165,6 +170,18 @@ class Publication
     public function setAccessTokenSecret(string $access_token_secret): self
     {
         $this->access_token_secret = $access_token_secret;
+
+        return $this;
+    }
+
+    public function getUploadedDocumentId(): ?UploadedDocument
+    {
+        return $this->uploaded_document_id;
+    }
+
+    public function setUploadedDocumentId(?UploadedDocument $uploaded_document_id): self
+    {
+        $this->uploaded_document_id = $uploaded_document_id;
 
         return $this;
     }
