@@ -13,6 +13,7 @@
         "fzaninotto/faker": "^1.9",
         "laminas/laminas-code": "^3.4",
         "laminas/laminas-eventmanager": "^3.2",
+        "lexik/jwt-authentication-bundle": "^2.6",
         "nelmio/api-doc-bundle": "^3.5",
         "nelmio/cors-bundle": "^2.0",
         "sensio/framework-extra-bundle": "^5.5",
