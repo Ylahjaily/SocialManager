@@ -20,6 +20,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+
 class ReviewController extends AbstractFOSRestController
 {
     private $reviewRepo;
@@ -127,7 +128,10 @@ class ReviewController extends AbstractFOSRestController
      *  description = "Uncorect request"
      * )
      */
-    public function postApiReview(Request $request, Proposal $proposal, UserRepository $userRepository,SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator)
+
+    public function postApiProposalReview(Request $request, Proposal $proposal, UserRepository $userRepository, EntityManagerInterface $em)
+
+  
     {
         $review=new Review();
         $review->setIsApproved(false);

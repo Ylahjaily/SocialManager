@@ -237,8 +237,6 @@ class PublicationController extends AbstractFOSRestController
             'status' => $title,
             'media_ids' => $media->media_id_string
             ];
-        
-
         $result = $connection->post('statuses/update', $parameters);
         $em->persist($social);
         $em->persist($publication);
