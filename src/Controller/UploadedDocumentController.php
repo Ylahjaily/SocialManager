@@ -18,7 +18,7 @@ class UploadedDocumentController extends AbstractFOSRestController
 
     static private $postUploadedDocumentRequiredAttributes = [
         'title' => 'setTitle',
-        'data' => 'setData',
+        'data' => 'setData'
     ];
 
     static private $patchUploadedDocumentModifiableAttributes = [
@@ -67,14 +67,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/proposals/{id}/up_docs/")
-     * @SWG\Parameter(
-     *  name = "id",
-     *  in = "path",
-     *  type = "number",
-     *  description = "the id of the proposal",
-     *  required = true
-     * )
+     * @Rest\Post("/api/up_docs/")
      * @SWG\Parameter(
      *  name = "title",
      *  in = "body",
@@ -106,14 +99,10 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  description = "Uncorect request"
      * )
      */
-    public function postApiUploadedDocument(Request $request, Proposal $proposal, EntityManagerInterface $em)
+    public function postApiUploadedDocument(Request $request, EntityManagerInterface $em)
     {
         $uploadedDocument=new UploadedDocument();
 
-        if(!$proposal) {
-            throw new NotFoundHttpException('This proposal does not exist');
-        }
-        $uploadedDocument->setProposalId($proposal);
 
         foreach(static::$postUploadedDocumentRequiredAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
@@ -121,8 +110,7 @@ class UploadedDocumentController extends AbstractFOSRestController
             }
             $uploadedDocument->$setter($request->get($attribute));
         }
-
-
+        
         $em->persist($uploadedDocument);
         $em->flush();
 

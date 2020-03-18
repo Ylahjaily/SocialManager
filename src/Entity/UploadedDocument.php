@@ -15,13 +15,13 @@ class UploadedDocument
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"uploaded_document:read"})
+     * @Groups({"proposal"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"uploaded_document:read", "uploaded_document:write"})
+     * @Groups({"proposal"})
      * @Assert\NotBlank()
      * @Assert\Length(
      * min = 2,
@@ -34,17 +34,11 @@ class UploadedDocument
 
     /**
      * @ORM\Column(type="blob")
-     * @Groups({"uploaded_document:read", "uploaded_document:write"})
+     * @Groups({"proposal"})
      * @Assert\NotBlank()
      */
     private $data;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Proposal", inversedBy="uploadedDocument", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"uploaded_document:read"})
-     */
-    private $proposal_id;
 
     public function getId(): ?int
     {
@@ -75,18 +69,4 @@ class UploadedDocument
         return $this;
     }
 
-    /**
-     * @Groups({"review_comment:read"})
-     */
-    public function getProposalId(): ?Proposal
-    {
-        return $this->proposal_id;
-    }
-
-    public function setProposalId(Proposal $proposal_id): self
-    {
-        $this->proposal_id = $proposal_id;
-
-        return $this;
-    }
 }

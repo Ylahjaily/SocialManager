@@ -15,6 +15,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Entity\User;
 use Swagger\Annotations as SWG;
 use App\Entity\SocialNetwork;
+use App\Entity\Proposal;
+use Abraham\TwitterOAuth\TwitterOAuth;
 
 class PublicationController extends AbstractFOSRestController
 {
@@ -64,7 +66,7 @@ class PublicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/social_network/{id}/publications/")
+     * @Rest\Post("/api/proposals/{id}/publications/")
      * @Rest\View(serializerGroups={"publication"})
      * @SWG\Parameter(
      *  name = "id",
@@ -85,10 +87,10 @@ class PublicationController extends AbstractFOSRestController
      *  )
      * )
      * @SWG\Parameter(
-     *  name = "proposal_id",
+     *  name = "social_network_id",
      *  in = "body",
      *  type = "number",
-     *  description = "the ID of the proposal which will be published",
+     *  description = "the ID of the social network which will be published",
      *  required = true,
      *  @SWG\Schema(
      *      example = "2",
@@ -104,14 +106,14 @@ class PublicationController extends AbstractFOSRestController
      *  description = "Uncorect request"
      * )
      */
-    public function postApiPublication(Request $request, ProposalRepository $proposalRepository, UserRepository $userRepository, SocialNetwork $social, EntityManagerInterface $em)
+    public function postApiPublication(Request $request, Proposal $proposal, UserRepository $userRepository, SocialNetworkRepository $socialRepo, EntityManagerInterface $em)
     {
         $publication=new Publication();
 
-        if(!$social) {
-            throw new NotFoundHttpException('This social network does not exist');
+        if(!$proposal) {
+            throw new NotFoundHttpException('This proposal does not exist');
         }
-        $publication->setSocialNetworkId($social);
+        $publication->setProposalId($proposal);
 
         if(!is_null($request->get('user_id'))) {
             $user = $userRepository->find($request->get('user_id'));
@@ -120,13 +122,22 @@ class PublicationController extends AbstractFOSRestController
             }
         }
 
-        if(!is_null($request->get('proposal_id'))) {
-            $proposal = $proposalRepository->find($request->get('proposal_id'));
-            if(!is_null($proposal)) {
-                $publication->setProposalId($proposal);
+        if(!is_null($request->get('social_network_id'))) {
+            $social = $socialRepo->find($request->get('social_network_id'));
+            if(!is_null($social)) {
+                $publication->setSocialNetworkId($social);
             }
         }
 
+        $con_key = $publication->getConsumerKey();
+        $con_sec = $publication->getConsumerSecret();
+        $acc_tok = $publication->getAccessToken();
+        $acc_sec = $publication->getAccessTokenSecret();
+        $text = $proposal->getTextContent()."";
+        $connection = new TwitterOAuth($con_key, $con_sec, $acc_tok, $acc_sec);
+        $content = $connection->get("account/verify_credentials");
+
+        $statues = $connection->post("statuses/update", ["status" => $text]);
         $em->persist($publication);
         $em->flush();
 
