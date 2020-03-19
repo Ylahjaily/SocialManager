@@ -134,8 +134,10 @@ class PublicationController extends AbstractFOSRestController
         $con_sec = $publication->getConsumerSecret();
         $acc_tok = $publication->getAccessToken();
         $acc_sec = $publication->getAccessTokenSecret();
+        
         $text =$proposal->getTextContent();
-
+        $proposal->setIsPublished(true);
+        $proposal->setDatePublicationAt(new \DateTime('now'));
         $social->addProposal($proposal);
         
         $connection = new TwitterOAuth($con_key, $con_sec, $acc_tok, $acc_sec);
@@ -145,6 +147,8 @@ class PublicationController extends AbstractFOSRestController
             "status" => $text
             ]
         );
+
+        $em->persist($proposal);
         $em->persist($social);
         $em->persist($publication);
         $em->flush();
@@ -222,14 +226,17 @@ class PublicationController extends AbstractFOSRestController
         $acc_tok = $publication->getAccessToken();
         $acc_sec = $publication->getAccessTokenSecret();
 
-        $social->addUploadedDocument($uploadedDoc);
+        
         
         $connection = new TwitterOAuth($con_key, $con_sec, $acc_tok, $acc_sec);
         $content = $connection->get("account/verify_credentials");
 
         $med = $uploadedDoc->getDataPath();
         $title = $uploadedDoc->getTitle();
-        
+        $uploadedDoc->setIsPublished(true);
+        $uploadedDoc->setDatePublicationAt(new \DateTime('now'));
+        $social->addUploadedDocument($uploadedDoc);
+
         $media = $connection->upload('media/upload', [
             'media' => '../public/'.$med
             ]);
@@ -238,6 +245,8 @@ class PublicationController extends AbstractFOSRestController
             'media_ids' => $media->media_id_string
             ];
         $result = $connection->post('statuses/update', $parameters);
+
+        $em->persist($uploadedDoc);
         $em->persist($social);
         $em->persist($publication);
         $em->flush();
