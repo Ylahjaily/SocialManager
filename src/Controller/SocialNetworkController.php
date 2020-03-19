@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
 use App\Repository\ProposalRepository;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class SocialNetworkController extends AbstractFOSRestController
 {
@@ -31,21 +33,29 @@ class SocialNetworkController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/socials/")
-     * @Rest\View(serializerGroups={"social"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of social networks"
      * )
      */
-    public function getApiSocials()
+    public function getApiSocials(SerializerInterface $serializer)
     {
         $socials=$this->socialRepo->findAll();
-        return $this->view($socials);
+        $json = $serializer->serialize(
+            $socials,
+            'json', ['groups' => 'social']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/socials/{id}")
-     * @Rest\View(serializerGroups={"social"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -62,14 +72,27 @@ class SocialNetworkController extends AbstractFOSRestController
      *  description = "social network not found"
      * )
      */
-    public function getApiSocial(SocialNetwork $social)
+    public function getApiSocial(SocialNetwork $social, SerializerInterface $serializer)
     {
-        return $this->view($social);
+        if(!$social) {
+            throw new NotFoundHttpException('This social network does not exist');
+        }
+
+        $json = $serializer->serialize(
+            $social,
+            'json', ['groups' => 'social']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
      * @Rest\Post("/api/admin/socials/")
-     * @Rest\View(serializerGroups={"social"})
      * @SWG\Parameter(
      *  name = "name",
      *  in = "body",
@@ -90,20 +113,30 @@ class SocialNetworkController extends AbstractFOSRestController
      *  description = "Uncorect request"
      * )
      */
-    public function postApiSocial(Request $request, EntityManagerInterface $em)
+    public function postApiSocial(Request $request, EntityManagerInterface $em, SerializerInterface $serializer)
     {
         $social=new SocialNework();
 
         $em->persist($social);
         $em->flush();
 
-        return $this->view($social);
+        $json = $serializer->serialize(
+            $social,
+            'json', ['groups' => 'social']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(201);
+        return $response;
+
 
     }
 
     /**
      * @Rest\Delete("api/socials/{id}")
-     * @Rest\View(serializerGroups={"social"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -120,19 +153,23 @@ class SocialNetworkController extends AbstractFOSRestController
      *  description = "Social Network not found"
      * )
      */
-    public function deleteApiSocial(SocialNetwork $social, EntityManagerInterface $em)
+    public function deleteApiSocial(SocialNetwork $social, EntityManagerInterface $em, SerializerInterface $serializer)
     {
         if($social)
         {
             $em->remove($social);
             $em->flush();
-            return $this->view("La suppression a bien été effectuée");
+            $response = new Response();
+            $response->headers->set('Content-Type', 'application/json');
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+            $response->setContent("Social Network deleted");
+            $response->setStatusCode(204);
+            return $response;
         }
     }
 
     /**
      * @Rest\Patch("api/socials/{id}")
-     * @Rest\View(serializerGroups={"social"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -164,7 +201,7 @@ class SocialNetworkController extends AbstractFOSRestController
      *  description = "Social network doesn't exist"
      * )
      */
-    public function patchApiSocial(SocialNetwork $social, Request $request,EntityManagerInterface $em)
+    public function patchApiSocial(SocialNetwork $social, Request $request,EntityManagerInterface $em, SerializerInterface $serializer)
     {
         foreach(static::$patchSocialModifiableAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
@@ -173,7 +210,18 @@ class SocialNetworkController extends AbstractFOSRestController
             $social->$setter($request->get($attribute));
         }
         $em->flush();
-        return $this->view($social);
+
+        $json = $serializer->serialize(
+            $social,
+            'json', ['groups' => 'social']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
 }

@@ -18,6 +18,8 @@ use App\Entity\SocialNetwork;
 use App\Entity\Proposal;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use App\Entity\UploadedDocument;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class PublicationController extends AbstractFOSRestController
 {
@@ -30,21 +32,30 @@ class PublicationController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/publications/")
-     * @Rest\View(serializerGroups={"publication"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of Publications"
      * )
      */
-    public function getApiPublications()
+    public function getApiPublications(SerializerInterface $serializer)
     {
-        $publicationRepo=$this->publicationRepo->findAll();
-        return $this->view($publicationRepo);
+        $publications=$this->publicationRepo->findAll();
+        
+        $json = $serializer->serialize(
+            $publications,
+            'json', ['groups' => 'publication']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/publications/{id}")
-     * @Rest\View(serializerGroups={"publication"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -61,14 +72,27 @@ class PublicationController extends AbstractFOSRestController
      *  description = "Publication not found"
      * )
      */
-    public function getApiPublication(Publication $publication)
+    public function getApiPublication(Publication $publication, SerializerInterface $serializer)
     {
-        return $this->view($publication);
+        if(!$publication) {
+            throw new NotFoundHttpException('This publication does not exist');
+        }
+
+        $json = $serializer->serialize(
+            $publication,
+            'json', ['groups' => 'publication']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
      * @Rest\Post("/api/proposals/{id}/publications/")
-     * @Rest\View(serializerGroups={"publication"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -107,7 +131,7 @@ class PublicationController extends AbstractFOSRestController
      *  description = "Uncorect request"
      * )
      */
-    public function postApiPublication(Request $request, Proposal $proposal, UserRepository $userRepository, SocialNetworkRepository $socialRepo, EntityManagerInterface $em)
+    public function postApiPublication(SerializerInterface $serializer, Request $request, Proposal $proposal, UserRepository $userRepository, SocialNetworkRepository $socialRepo, EntityManagerInterface $em)
     {
         $publication=new Publication();
 
@@ -135,6 +159,8 @@ class PublicationController extends AbstractFOSRestController
         $acc_tok = $publication->getAccessToken();
         $acc_sec = $publication->getAccessTokenSecret();
         $text =$proposal->getTextContent();
+        $proposal->setIsPublished(true);
+        $proposal->setDatePublicationAt(new \DateTime('now'));
 
         $social->addProposal($proposal);
         
@@ -145,17 +171,27 @@ class PublicationController extends AbstractFOSRestController
             "status" => $text
             ]
         );
+        $em->persist($proposal);
         $em->persist($social);
         $em->persist($publication);
         $em->flush();
 
-        return $this->view($publication);
+        $json = $serializer->serialize(
+            $publication,
+            'json', ['groups' => 'publication']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(201);
+        return $response;
 
     }
 
     /**
      * @Rest\Post("/api/up_docs/{id}/publications/")
-     * @Rest\View(serializerGroups={"publication"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -194,7 +230,7 @@ class PublicationController extends AbstractFOSRestController
      *  description = "Uncorect request"
      * )
      */
-    public function postApiMediaPublication(Request $request, UploadedDocument $uploadedDoc, UserRepository $userRepository, SocialNetworkRepository $socialRepo, EntityManagerInterface $em)
+    public function postApiMediaPublication(SerializerInterface $serializer, Request $request, UploadedDocument $uploadedDoc, UserRepository $userRepository, SocialNetworkRepository $socialRepo, EntityManagerInterface $em)
     {
         $publication=new Publication();
 
@@ -221,7 +257,9 @@ class PublicationController extends AbstractFOSRestController
         $con_sec = $publication->getConsumerSecret();
         $acc_tok = $publication->getAccessToken();
         $acc_sec = $publication->getAccessTokenSecret();
-
+        
+        $uploadedDoc->setIsPublished(true);
+        $uploadedDoc->setDatePublicationAt(new \DateTime('now'));
         $social->addUploadedDocument($uploadedDoc);
         
         $connection = new TwitterOAuth($con_key, $con_sec, $acc_tok, $acc_sec);
@@ -238,11 +276,22 @@ class PublicationController extends AbstractFOSRestController
             'media_ids' => $media->media_id_string
             ];
         $result = $connection->post('statuses/update', $parameters);
+        $em->persist($proposal);
         $em->persist($social);
         $em->persist($publication);
         $em->flush();
 
-        return $this->view($publication);
+        $json = $serializer->serialize(
+            $publication,
+            'json', ['groups' => 'publication']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(201);
+        return $response;
 
     }    
 
@@ -268,19 +317,24 @@ class PublicationController extends AbstractFOSRestController
      *  description = "User not allowed"
      * )
      */
-    public function deleteApiPublication(Publication $publication, EntityManagerInterface $em)
+    public function deleteApiPublication(SerializerInterface $serializer, Publication $publication, EntityManagerInterface $em)
     {
         if($publication)
         {
             $em->remove($publication);
             $em->flush();
-            return $this->view("La suppression a bien été effectuée");
+
+            $response = new Response();
+            $response->headers->set('Content-Type', 'application/json');
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+            $response->setContent("Publication deleted");
+            $response->setStatusCode(204);
+            return $response;
         }
     }
 
     /**
      * @Rest\Get("/api/communicant/{id}/publications")
-     * @Rest\View(serializerGroups={"publication"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -301,7 +355,7 @@ class PublicationController extends AbstractFOSRestController
      *  description = "User not allowed"
      * )
      */
-    public function getApiPublicationsByCommunicant(User $user)
+    public function getApiPublicationsByCommunicant(SerializerInterface $serializer, User $user)
     {
         if(!$user) {
             throw new NotFoundHttpException('This communicant does not exist');
@@ -311,7 +365,17 @@ class PublicationController extends AbstractFOSRestController
         if(!$publications) {
             throw new NotFoundHttpException('There is no publication by you...');
         }
-        return $this->view($publications);
+        $json = $serializer->serialize(
+            $publications,
+            'json', ['groups' => 'publication']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
 
