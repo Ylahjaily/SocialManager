@@ -31,7 +31,7 @@ class PublicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/publications/")
+     * @Rest\Get("/api/admin/publications/")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of Publications"
@@ -55,7 +55,7 @@ class PublicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/publications/{id}")
+     * @Rest\Get("/api/profile/publications/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -92,7 +92,7 @@ class PublicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/proposals/{id}/publications/")
+     * @Rest\Post("/api/communicant/proposals/{id}/publications/")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -191,7 +191,7 @@ class PublicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/up_docs/{id}/publications/")
+     * @Rest\Post("/api/communicant/up_docs/{id}/publications/")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -296,7 +296,7 @@ class PublicationController extends AbstractFOSRestController
     }    
 
     /**
-     * @Rest\Delete("api/publications/{id}")
+     * @Rest\Delete("api/communicant/publications/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",

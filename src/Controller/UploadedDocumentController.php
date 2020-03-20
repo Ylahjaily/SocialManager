@@ -34,7 +34,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/up_docs/")
+     * @Rest\Get("/api/admin/up_docs/")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of documents"
@@ -57,7 +57,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/up_docs/{id}")
+     * @Rest\Get("/api/profile/up_docs/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -94,7 +94,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/communicant/uploaded_docs/approved")
+     * @Rest\Get("/api/profile/uploaded_docs/approved")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of files which have been approved"
@@ -121,7 +121,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/uploaded_docs/unprocessed")
+     * @Rest\Get("/api/reviewer/uploaded_docs/unprocessed")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of files which havent been treated"
@@ -227,7 +227,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/member/{id}/up_docs/rejected")
+     * @Rest\Get("/api/profile/{id}/up_docs/rejected")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -378,7 +378,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/users/{id}/up_docs/")
+     * @Rest\Post("/api/profile/{id}/up_docs/")
      * @Rest\FileParam(name = "image", description = "the media we wwant to upload", nullable=false,image=true)
      * @param ParamFetcher $paramFetcher
      * @SWG\Parameter(
@@ -474,7 +474,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Delete("api/up_docs/{id}")
+     * @Rest\Delete("api/admin/up_docs/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -511,7 +511,7 @@ class UploadedDocumentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Patch("api/up_docs/{id}")
+     * @Rest\Patch("api/reviewer/up_docs/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",

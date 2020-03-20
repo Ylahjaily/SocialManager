@@ -37,7 +37,7 @@ class CommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/comments/")
+     * @Rest\Get("/api/admin/comments/")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of comments"
@@ -65,7 +65,7 @@ class CommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/comments/{id}")
+     * @Rest\Get("/api/profile/comments/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -195,7 +195,7 @@ class CommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Delete("api/comments/{id}")
+     * @Rest\Delete("api/profile/comments/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -234,7 +234,7 @@ class CommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Patch("api/comments/{id}")
+     * @Rest\Patch("api/profile/comments/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",

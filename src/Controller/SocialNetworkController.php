@@ -32,7 +32,7 @@ class SocialNetworkController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/socials/")
+     * @Rest\Get("/api/admin/socials/")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of social networks"
@@ -55,7 +55,7 @@ class SocialNetworkController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/socials/{id}")
+     * @Rest\Get("/api/admin/socials/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -136,7 +136,7 @@ class SocialNetworkController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Delete("api/socials/{id}")
+     * @Rest\Delete("api/admin/socials/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -169,7 +169,7 @@ class SocialNetworkController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Patch("api/socials/{id}")
+     * @Rest\Patch("api/admin/socials/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",

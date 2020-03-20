@@ -30,7 +30,6 @@ class CreateAdminCommand extends Command
         $this
             ->setDescription('Add a short description for your command')
             ->addArgument('email', InputArgument::REQUIRED, 'email description')
-            ->addArgument('apiKey', InputArgument::REQUIRED, 'apiKey description')
             ->addArgument('lastName', InputArgument::REQUIRED, 'lastName description')
             ->addArgument('firstName', InputArgument::REQUIRED, 'firstName description')
             ->addArgument('password', InputArgument::REQUIRED, 'password description')
@@ -41,7 +40,6 @@ class CreateAdminCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $email = $input->getArgument('email');
-        $apiKey = $input->getArgument('apiKey');
         $lastName = $input->getArgument('lastName');
         $firstName = $input->getArgument('firstName');
         $password = $input->getArgument('password');
@@ -49,7 +47,6 @@ class CreateAdminCommand extends Command
 
         $user = new User();
         $user->setEmail($email);
-        $user->setApiKey($apiKey);
         $user->setLastName($lastName);
         $user->setFirstName($firstName);
         $user->setPassword($password);

@@ -27,7 +27,6 @@ class UserController extends AbstractFOSRestController
         'lastName' => 'setLastName',
         'firstName' => 'setFirstName',
         'roles' => 'setRoles',
-        'apiKey' => 'setApiKey',
         'password' => 'setPassword',
     ];
 
@@ -38,7 +37,7 @@ class UserController extends AbstractFOSRestController
 
 
     /**
-     * @Rest\Get("/api/users/{email}")
+     * @Rest\Get("/api/profile/{email}")
      * @SWG\Parameter(
      *  name = "email",
      *  in = "path",
@@ -77,7 +76,7 @@ class UserController extends AbstractFOSRestController
 
 
     /**
-     * @Rest\Get("/api/users/")
+     * @Rest\Get("/api/admin/users/")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of users"
@@ -142,18 +141,6 @@ class UserController extends AbstractFOSRestController
      *  )
      * )
      * @SWG\Parameter(
-     *  name = "apiKey",
-     *  in = "body",
-     *  type = "string",
-     *  description = "The apiKey of the User",
-     *  required = true,
-     *  @SWG\Schema(
-     *      example = "xUh5Dcx",
-     *      type = "string",
-     *      maxLength = 255
-     *  )
-     * )
-     * @SWG\Parameter(
      *  name = "password",
      *  in = "body",
      *  type = "string",
@@ -207,7 +194,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Delete("api/users/{id}")
+     * @Rest\Delete("api/admin/users/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -291,18 +278,6 @@ class UserController extends AbstractFOSRestController
      *  )
      * )
      * @SWG\Parameter(
-     *  name = "apiKey",
-     *  in = "body",
-     *  type = "string",
-     *  description = "The apiKey of the User",
-     *  required = true,
-     *  @SWG\Schema(
-     *      example = "xUh5Dcx",
-     *      type = "string",
-     *      maxLength = 255
-     *  )
-     * )
-     * @SWG\Parameter(
      *  name = "password",
      *  in = "body",
      *  type = "string",
@@ -373,7 +348,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/users/proposals/{id}/reviewers")
+     * @Rest\Get("/api/profile/proposals/{id}/reviewers")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",

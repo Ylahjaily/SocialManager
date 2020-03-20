@@ -50,12 +50,6 @@ class Proposal
     private $textContent;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
-     */
-    private $link;
-
-    /**
      * @ORM\Column(type="boolean")
      * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social", "publication"})
      */
@@ -154,18 +148,6 @@ class Proposal
     public function setTextContent(string $textContent): self
     {
         $this->textContent = $textContent;
-
-        return $this;
-    }
-
-    public function getLink(): ?string
-    {
-        return $this->link;
-    }
-
-    public function setLink(string $link): self
-    {
-        $this->link = $link;
 
         return $this;
     }
