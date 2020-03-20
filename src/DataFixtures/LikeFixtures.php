@@ -15,27 +15,26 @@ class LikeFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $faker = Faker\Factory::create('fr_FR');
-        
+
         /**
-         * on cree un user 
+         * on cree un user
          * on cree une soumission
          * on cree un reviewer
          * on cree une review approuvee
          * on fait passer la soumission a "publiée"
-         * on cree un utilisateur qui va commenter 
-         * et on lui attache un commentaire 
+         * on cree un utilisateur qui va commenter
+         * et on lui attache un commentaire
          */
         //creation de l'user qui va soumettre
         $user_user=new User();
         $user_user->setEmail($faker->safeEmail);
         $user_user->setLastName($faker->lastName);
         $user_user->setFirstName($faker->firstNameFemale);
-        $user_user->setApiKey($faker->swiftBicNumber);
         $user_user->setPassword($faker->domainWord);
         $manager->persist($user_user);
 
         //creation de la soumission
-        $proposal3 = new Proposal();    
+        $proposal3 = new Proposal();
         $proposal3->setTitle($faker->name);
         $proposal3->setTextContent($faker->text($maxNbChars = 200));
         $proposal3->setUserId($user_user);
@@ -46,7 +45,6 @@ class LikeFixtures extends Fixture
         $user_reviewer->setEmail($faker->safeEmail);
         $user_reviewer->setLastName($faker->lastName);
         $user_reviewer->setFirstName($faker->firstNameFemale);
-        $user_reviewer->setApiKey($faker->swiftBicNumber);
         $user_reviewer->setPassword($faker->domainWord);
         $user_reviewer->setRoles(array('ROLE_REVIEWER'));
         $manager->persist($user_reviewer);
@@ -55,8 +53,8 @@ class LikeFixtures extends Fixture
         $review_to2 = new Review();
         $review_to2->setProposalId($proposal3);
         $review_to2->setUserId($user_reviewer);
-        $review_to2->setIsApproved(true);  
-        $review_to2->setDecisionAt(new \DateTime('now'));         
+        $review_to2->setIsApproved(true);
+        $review_to2->setDecisionAt(new \DateTime('now'));
         $manager->persist($review_to2);
 
 
@@ -70,7 +68,6 @@ class LikeFixtures extends Fixture
         $user_fifi->setEmail($faker->safeEmail);
         $user_fifi->setLastName($faker->lastName);
         $user_fifi->setFirstName($faker->firstNameFemale);
-        $user_fifi->setApiKey($faker->swiftBicNumber);
         $user_fifi->setPassword($faker->domainWord);
         $manager->persist($user_fifi);
 

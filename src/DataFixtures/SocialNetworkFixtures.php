@@ -14,14 +14,13 @@ class SocialNetworkFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $faker = Faker\Factory::create('fr_FR');
-        
+
 
         //Creation du communiquant
         $user_comm=new User();
         $user_comm->setEmail($faker->safeEmail);
         $user_comm->setLastName($faker->lastName);
         $user_comm->setFirstName($faker->firstNameFemale);
-        $user_comm->setApiKey($faker->swiftBicNumber);
         $user_comm->setPassword($faker->domainWord);
         $user_comm->setRoles(array('ROLE_COMMUNIQUANT'));
         $manager->persist($user_comm);
@@ -33,7 +32,7 @@ class SocialNetworkFixtures extends Fixture
         $social->setName("twitter");
 
         $manager->persist($social);
-        
+
         $manager->flush();
     }
 }
