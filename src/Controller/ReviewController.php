@@ -35,7 +35,7 @@ class ReviewController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/reviews/")
+     * @Rest\Get("/api/admin/reviews/")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of reviews"
@@ -63,7 +63,7 @@ class ReviewController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/reviews/{id}")
+     * @Rest\Get("/api/profile/reviews/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -100,7 +100,7 @@ class ReviewController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/proposals/{id}/reviews/")
+     * @Rest\Post("/api/reviewer/proposals/{id}/reviews/")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -178,7 +178,7 @@ class ReviewController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/api/up_docs/{id}/reviews/")
+     * @Rest\Post("/api/reviewer/up_docs/{id}/reviews/")
      * @Rest\View(serializerGroups={"review"})
      * @SWG\Parameter(
      *  name = "id",
@@ -232,7 +232,7 @@ class ReviewController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Delete("api/reviews/{id}")
+     * @Rest\Delete("api/reviewer/reviews/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",

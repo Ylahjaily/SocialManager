@@ -28,7 +28,7 @@ class LikeController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/likes/")
+     * @Rest\Get("/api/admin/likes/")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of likes"
@@ -56,7 +56,7 @@ class LikeController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/likes/{id}")
+     * @Rest\Get("/api/profile/likes/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -169,7 +169,7 @@ class LikeController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Delete("api/likes/{id}")
+     * @Rest\Delete("api/profile/likes/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",

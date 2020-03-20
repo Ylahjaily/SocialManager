@@ -85,12 +85,6 @@ class User implements Userinterface
      */
     private $reviews;
 
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user", "proposal", "review", "comment", "like", "reviewComment", "social"})
-     * @Assert\NotBlank()
-     */
-    private $apiKey;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="user_id", orphanRemoval=true)
@@ -280,17 +274,6 @@ class User implements Userinterface
         return $this;
     }
 
-    public function getApiKey(): ?string
-    {
-        return $this->apiKey;
-    }
-
-    public function setApiKey(string $apiKey): self
-    {
-        $this->apiKey = $apiKey;
-
-        return $this;
-    }
 
     /**
      * @return Collection|Comment[]
