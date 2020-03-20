@@ -28,7 +28,6 @@ class ReviewCommentFixtures extends Fixture
         $user_x->setEmail($faker->safeEmail);
         $user_x->setLastName($faker->lastName);
         $user_x->setFirstName($faker->firstNameFemale);
-        $user_x->setApiKey($faker->swiftBicNumber);
         $user_x->setPassword($faker->domainWord);
         $manager->persist($user_x);
 
@@ -44,7 +43,6 @@ class ReviewCommentFixtures extends Fixture
         $user_y->setEmail($faker->safeEmail);
         $user_y->setLastName($faker->lastName);
         $user_y->setFirstName($faker->firstNameFemale);
-        $user_y->setApiKey($faker->swiftBicNumber);
         $user_y->setPassword($faker->domainWord);
         $user_y->setRoles(array('ROLE_REVIEWER'));
         $manager->persist($user_y);

@@ -21,7 +21,6 @@ class SocialNetworkFixtures extends Fixture
         $user_comm->setEmail($faker->safeEmail);
         $user_comm->setLastName($faker->lastName);
         $user_comm->setFirstName($faker->firstNameFemale);
-        $user_comm->setApiKey($faker->swiftBicNumber);
         $user_comm->setPassword($faker->domainWord);
         $user_comm->setRoles(array('ROLE_COMMUNIQUANT'));
         $manager->persist($user_comm);
