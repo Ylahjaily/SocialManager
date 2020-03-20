@@ -20,7 +20,6 @@ class ReviewFixtures extends Fixture
         $user_review->setEmail($faker->safeEmail);
         $user_review->setLastName($faker->lastName);
         $user_review->setFirstName($faker->firstNameFemale);
-        $user_review->setApiKey($faker->swiftBicNumber);
         $user_review->setPassword($faker->domainWord);
         $user_review->setRoles(array('ROLE_REVIEWER'));
         $manager->persist($user_review);
