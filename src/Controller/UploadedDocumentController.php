@@ -16,6 +16,8 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class UploadedDocumentController extends AbstractFOSRestController
 {
@@ -33,21 +35,29 @@ class UploadedDocumentController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/api/up_docs/")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of documents"
      * )
      */
-    public function getApiUploadedDocuments()
+    public function getApiUploadedDocuments(SerializerInterface $serializer)
     {
         $uploaded_documents=$this->uploadedDocRepo->findAll();
-        return $this->view($uploaded_documents);
+        $json = $serializer->serialize(
+            $uploaded_documents,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/up_docs/{id}")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -64,46 +74,77 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  description = "document not found"
      * )
      */
-    public function getApiUploadedDocument(UploadedDocument $uploadedDocument)
+    public function getApiUploadedDocument(UploadedDocument $uploadedDocument, SerializerInterface $serializer)
     {
-        return $this->view($uploadedDocument);
+        if(!$uploadedDocument) {
+            throw new NotFoundHttpException('This file does not exist');
+        }
+
+        $json = $serializer->serialize(
+            $uploadedDocument,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/communicant/uploaded_docs/approved")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of files which have been approved"
      * )
      */
-    public function getApiApprovedFiles()
+    public function getApiApprovedFiles(SerializerInterface $serializer)
     {
         $up_docs=$this->uploadedDocRepo->findApprovedFiles();
         if(!$up_docs) {
             throw new NotFoundHttpException('There is no approved files yet');
         }
-        return $this->view($up_docs);
+        $json = $serializer->serialize(
+            $up_docs,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
 
     }
 
     /**
      * @Rest\Get("/api/uploaded_docs/unprocessed")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of files which havent been treated"
      * )
      */
-    public function getApiUnProcessedFiles()
+    public function getApiUnProcessedFiles(SerializerInterface $serializer)
     {
         $up_docs=$this->uploadedDocRepo->findUnProcessedFiles();
-        return $this->view($up_docs);
+        $json = $serializer->serialize(
+            $up_docs,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/reviewer/{id}/up_docs")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -120,7 +161,7 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  description = "User doesn't exist"
      * )
      */
-    public function getApiApprovedFilesByReviewer(User $user)
+    public function getApiApprovedFilesByReviewer(User $user, SerializerInterface $serializer)
     {
         if(!$user) {
             throw new NotFoundHttpException('This user does not exist');
@@ -130,12 +171,21 @@ class UploadedDocumentController extends AbstractFOSRestController
         if(!$up_docs) {
             throw new NotFoundHttpException('There is no file approved by this reviewer');
         }
-        return $this->view($up_docs);
+        $json = $serializer->serialize(
+            $up_docs,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
     
     /**
      * @Rest\Get("/api/reviewer/{id}/up_docs/rejected")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -152,7 +202,7 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  description = "User doesn't exist"
      * )
      */
-    public function getApiRejectedFilesByReviewer(User $user)
+    public function getApiRejectedFilesByReviewer(User $user, SerializerInterface $serializer)
     {
         if(!$user) {
             throw new NotFoundHttpException('This user does not exist');
@@ -162,12 +212,22 @@ class UploadedDocumentController extends AbstractFOSRestController
         if(!$up_docs) {
             throw new NotFoundHttpException('There is no file here...');
         }
-        return $this->view($up_docs);
+        
+        $json = $serializer->serialize(
+            $up_docs,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/member/{id}/up_docs/rejected")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -184,7 +244,7 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  description = "User doesn't exist"
      * )
      */
-    public function getApiRejectedFilesByMember(User $user)
+    public function getApiRejectedFilesByMember(User $user, SerializerInterface $serializer)
     {
         if(!$user) {
             throw new NotFoundHttpException('This user does not exist');
@@ -194,18 +254,27 @@ class UploadedDocumentController extends AbstractFOSRestController
         if(!$up_docs) {
             throw new NotFoundHttpException('Files do not exist');
         }
-        return $this->view($up_docs);
+        $json = $serializer->serialize(
+            $up_docs,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/profile/up_docs/published")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of files which have been published on social networks"
      * )
      */
-    public function getApiPublishedProposals()
+    public function getApiPublishedProposals(SerializerInterface $serializer)
     {
         $up_docs = $this->uploadedDocRepo->findPublishedFiles();
 
@@ -213,12 +282,21 @@ class UploadedDocumentController extends AbstractFOSRestController
             throw new NotFoundHttpException('There is no published file');
         }
 
-        return $this->view($up_docs);
+        $json = $serializer->serialize(
+            $up_docs,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
      * @Rest\Get("/api/profile/{id}/up_docs/published")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -235,7 +313,7 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  description = "User doesn't exist"
      * )
      */
-    public function getApiPublishedFilesByUser(User $user)
+    public function getApiPublishedFilesByUser(User $user, SerializerInterface $serializer)
     {
         if(!$user) {
             throw new NotFoundHttpException('This user does not exist');
@@ -245,12 +323,21 @@ class UploadedDocumentController extends AbstractFOSRestController
         if(!$up_docs) {
             throw new NotFoundHttpException('There is no published file by you...');
         }
-        return $this->view($up_docs);
+        $json = $serializer->serialize(
+            $up_docs,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
         /**
      * @Rest\Get("/api/profile/{id}/up_docs/approved")
-     * @Rest\View(serializerGroups={"uploadedDocument"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -267,7 +354,7 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  description = "User doesn't exist"
      * )
      */
-    public function getApiApprovedFilesByMember(User $user)
+    public function getApiApprovedFilesByMember(User $user, SerializerInterface $serializer)
     {
         if(!$user) {
             throw new NotFoundHttpException('This user does not exist');
@@ -277,12 +364,21 @@ class UploadedDocumentController extends AbstractFOSRestController
         if(!$up_docs) {
             throw new NotFoundHttpException('There is no approved file by you');
         }
-        return $this->view($up_docs);
+        $json = $serializer->serialize(
+            $up_docs,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setStatusCode(200);
+        $response->setContent($json);
+        return $response;
     }
 
     /**
      * @Rest\Post("/api/users/{id}/up_docs/")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @Rest\FileParam(name = "image", description = "the media we wwant to upload", nullable=false,image=true)
      * @param ParamFetcher $paramFetcher
      * @SWG\Parameter(
@@ -309,7 +405,7 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  description = "the file of the document which will be added",
      *  required = true,
      *  @SWG\Schema(
-     *      example = "document.pdf",
+     *      example = "document.png",
      *      type = "file"
      *  )
      * )
@@ -323,7 +419,7 @@ class UploadedDocumentController extends AbstractFOSRestController
      * )
      * 
      */
-    public function postApiUploadedDocument(ParamFetcher $paramFetcher, User $user, EntityManagerInterface $em, Request $request)
+    public function postApiUploadedDocument(SerializerInterface $serializer, ParamFetcher $paramFetcher, User $user, EntityManagerInterface $em, Request $request)
     {
         $uploadedDocument=new UploadedDocument();
 
@@ -358,7 +454,17 @@ class UploadedDocumentController extends AbstractFOSRestController
             );
         }
 
-        return $this->view($uploadedDocument);
+        $json = $serializer->serialize(
+            $uploadedDocument,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(201);
+        return $response;
 
     }
 
@@ -369,7 +475,6 @@ class UploadedDocumentController extends AbstractFOSRestController
 
     /**
      * @Rest\Delete("api/up_docs/{id}")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -390,19 +495,23 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  description = "Document not found"
      * )
      */
-    public function deleteApiUploadedDocument(UploadedDocument $uploadedDocument, EntityManagerInterface $em)
+    public function deleteApiUploadedDocument(UploadedDocument $uploadedDocument, EntityManagerInterface $em, SerializerInterface $serializer)
     {
         if($uploadedDocument)
         {
             $em->remove($uploadedDocument);
             $em->flush();
-            return $this->view("La suppression a bien été effectuée");
+            $response = new Response();
+            $response->headers->set('Content-Type', 'application/json');
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+            $response->setContent("File deleted");
+            $response->setStatusCode(204);
+            return $response;
         }
     }
 
     /**
      * @Rest\Patch("api/up_docs/{id}")
-     * @Rest\View(serializerGroups={"uploadedDoc"})
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -434,7 +543,7 @@ class UploadedDocumentController extends AbstractFOSRestController
      *  description = "Document doesn't exist"
      * )
      */
-    public function patchApiUploadedDocument(UploadedDocument $uploadedDocument, Request $request,EntityManagerInterface $em)
+    public function patchApiUploadedDocument(SerializerInterface $serializer, UploadedDocument $uploadedDocument, Request $request,EntityManagerInterface $em)
     {
         foreach(static::$patchUploadedDocumentModifiableAttributes as $attribute => $setter) {
             if(is_null($request->get($attribute))) {
@@ -443,7 +552,17 @@ class UploadedDocumentController extends AbstractFOSRestController
             $uploadedDocument->$setter($request->get($attribute));
         }
         $em->flush();
-        return $this->view($uploadedDocument);
+        $json = $serializer->serialize(
+            $uploadedDocument,
+            'json', ['groups' => 'uploadedDoc']
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent($json);
+        $response->setStatusCode(200);
+        return $response;
     }
 
 }

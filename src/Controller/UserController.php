@@ -403,7 +403,7 @@ class UserController extends AbstractFOSRestController
 
         $json = $serializer->serialize(
             $proposal,
-            'json', ['groups' => 'proposal']
+            'json', ['groups' => 'user']
         );
 
         $response = new Response();
