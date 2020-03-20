@@ -20,7 +20,6 @@ class AppFixtures extends Fixture
             $user->setEmail($faker->safeEmail);
             $user->setLastName($faker->lastName);
             $user->setFirstName($faker->firstNameFemale);
-            $user->setApiKey($faker->swiftBicNumber);
             $user->setPassword($faker->domainWord);
             $manager->persist($user);
         }

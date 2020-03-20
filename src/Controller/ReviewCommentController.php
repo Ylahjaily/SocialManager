@@ -37,7 +37,7 @@ class ReviewCommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/review_comments/")
+     * @Rest\Get("/api/admin/review_comments/")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of review comments"
@@ -65,7 +65,7 @@ class ReviewCommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/review_comments/{id}")
+     * @Rest\Get("/api/profile/review_comments/{id}")
      * @Rest\View(serializerGroups={"reviewComment"})
      * @SWG\Parameter(
      *  name = "id",
@@ -196,7 +196,7 @@ class ReviewCommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Delete("api/review_comments/{id}")
+     * @Rest\Delete("api/profile/review_comments/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -231,7 +231,7 @@ class ReviewCommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Patch("api/review_comments/{id}")
+     * @Rest\Patch("api/profile/review_comments/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -305,7 +305,7 @@ class ReviewCommentController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/review/{id}/review_comments")
+     * @Rest\Get("/api/profile/review/{id}/review_comments")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",

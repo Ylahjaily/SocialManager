@@ -30,7 +30,6 @@ class ProposalController extends AbstractFOSRestController
     static private $patchProposalModifiableAttributes = [
         'title' => 'setTitle',
         'textContent' => 'setTextContent',
-        'link' => 'setLink',
         'is_published' => 'setIsPublished',
         'date_publication_at' => 'setDatePublicationAt',
     ];
@@ -42,7 +41,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/proposals")
+     * @Rest\Get("/api/admin/proposals")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of proposals"
@@ -71,7 +70,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/communicant/proposals/approved")
+     * @Rest\Get("/api/profile/proposals/approved")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of proposals which have been approved"
@@ -100,7 +99,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/proposals/unprocessed")
+     * @Rest\Get("/api/reviewer/proposals/unprocessed")
      * @SWG\Response(
      *   response = 200,
      *   description = "return list of proposals which havent been treated"
@@ -212,7 +211,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/member/{id}/proposals/rejected")
+     * @Rest\Get("/api/profile/{id}/proposals/rejected")
      * @Rest\View(serializerGroups={"proposal"})
      * @SWG\Parameter(
      *  name = "id",
@@ -255,7 +254,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/proposals/{id}")
+     * @Rest\Get("/api/profile/proposals/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -332,15 +331,6 @@ class ProposalController extends AbstractFOSRestController
             }
             $proposal->$setter($request->get($attribute));
         }
-
-        if(!is_null($request->get('link'))) {
-            $link = $request->get('link');
-            if(preg_match('#^(http|https)://[\w-]+[\w.-]+\.[a-zA-Z]{2,6}#i', $link))
-            {
-                $proposal->setLink($link);
-            }
-        }
-
         $validationErrors = $validator->validate($proposal);
 
         /** @var ConstraintViolation $constraintViolation */
@@ -371,7 +361,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Delete("api/proposals/{id}")
+     * @Rest\Delete("api/admin/proposals/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -409,7 +399,7 @@ class ProposalController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Patch("api/reviewer/proposals/{id}")
+     * @Rest\Patch("api/profile/proposals/{id}")
      * @SWG\Parameter(
      *  name = "id",
      *  in = "path",
@@ -465,13 +455,6 @@ class ProposalController extends AbstractFOSRestController
             $proposal->$setter($request->get($attribute));
         }
 
-        if(!is_null($request->get('link'))) {
-            $link = $request->get('link');
-            if(preg_match('#^(http|https)://[\w-]+[\w.-]+\.[a-zA-Z]{2,6}#i', $link))
-            {
-                $proposal->setLink($link);
-            }
-        }
 
         $validationErrors = $validator->validate($proposal);
 
